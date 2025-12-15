@@ -1,0 +1,40 @@
+<header xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+    <div class="logo">TheAura</div>
+    <div class="search-container">
+        <form th:action="@{/search}" method="get" autocomplete="off">
+            <input type="text" name="keyword" class="search-box" placeholder="Tìm kiếm bài hát, nghệ sĩ, album...">
+            <span class="search-icon">
+                <i class="fa fa-search"></i>
+            </span>
+        </form>
+    </div>
+    <nav>
+<!--        <a th:href="@{/history}"><i class="fa fa-clock-rotate-left"></i> Lịch sử</a> đặt trong hồ sơ cùng với đăng xuất -->
+        <a href="/"><i class="fa fa-home"></i> Trang chủ</a>
+        <a href="/explore"><i class="fa fa-compass"></i> Khám phá</a>
+        <a href="/library"><i class="fa fa-layer-group"></i> <b>Thư viện</b></a>
+        <a th:href="@{/albums}"><i class="fa fa-compact-disc"></i> Album</a>
+        <a href="/recent"><i class="fa fa-history"></i> Gần đây</a>
+<!--        <a href="/favorites"><i class="fa fa-heart"></i> Yêu thích</a>  cho hien thi trong thu vien  -->
+<!--        <a href="/playlist"><i class="fa fa-music"></i> Playlist</a> cho hien thi trong thu vien -->
+        <a href="/profile" class="profile-btn"><i class="fa fa-user"></i> Hồ sơ</a>
+
+        <!-- <a th:href="@{/profile}"><i class="fa fa-user"></i> Cá nhân</a> -->
+        <!-- Mục ADMIN nổi bật nếu có -->
+        <!--
+        <span sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/admin}" style="color:#ff6b6b !important; font-weight:600;">
+                <i class="fa fa-shield"></i> Quản trị
+            </a>
+        </span>
+        -->
+        <!-- Đăng xuất hoặc đăng nhập (tách biệt bên phải cho hiện đại) -->
+        <span sec:authorize="isAuthenticated()">
+            <a th:href="@{/logout}" class="auth-btn">
+                <i class="fa fa-sign-out-alt"></i> Đăng xuất
+            </a>
+        </span>
+    </nav>
+</header>
+<!-- Nhớ thêm Font Awesome trong <head> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

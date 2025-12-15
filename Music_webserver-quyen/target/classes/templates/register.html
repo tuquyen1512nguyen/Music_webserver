@@ -1,0 +1,65 @@
+<!-- src/main/resources/templates/register.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký • TheAura Music</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="wave"></div>
+<div class="register-container">
+    <div class="register-box">
+        <h1>TheAura</h1>
+        <h2>Tạo tài khoản mới</h2>
+
+        <!-- Thông báo lỗi -->
+        <div th:if="${error}" style="color:#ff6b6b;background:#ffe0e0;padding:12px;border-radius:8px;margin-bottom:15px;text-align:center;">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Form dùng đúng RegisterRequest -->
+        <form th:action="@{/register}" th:object="${registerRequest}" method="post">
+            <div class="input-group">
+                <input type="text" th:field="*{username}" placeholder="Tên đăng nhập" required>
+                <span th:errors="*{username}" style="color:#ff6b6b;font-size:13px;"></span>
+            </div>
+
+            <div class="input-group">
+                <input type="text" th:field="*{fullName}" placeholder="Tên của bạn" required>
+            </div>
+
+            <div class="input-group">
+                <input type="email" th:field="*{email}" placeholder="Email của bạn" required>
+            </div>
+
+            <div class="input-group">
+                <input type="password" th:field="*{password}" placeholder="Mật khẩu" required>
+                <span th:errors="*{password}" style="color:#ff6b6b;font-size:13px;"></span>
+            </div>
+
+            <!-- repassword không có trong DTO → thêm hidden hoặc xử lý riêng -->
+            <div class="input-group">
+                <input type="password" name="repassword" placeholder="Nhập lại mật khẩu" required>
+            </div>
+
+            <button type="submit">Đăng ký ngay</button>
+        </form>
+
+        <p class="footer-text">
+            Đã có tài khoản? <a th:href="@{/login}">Đăng nhập ngay</a>
+        </p>
+    </div>
+</div>
+
+<!-- JS tự động lưu token nếu có (khi redirect từ flash attribute) -->
+<script th:if="${token}">
+    localStorage.setItem("token", [[${token}]]);
+    localStorage.setItem("username", "[[${username}]]");
+    window.location.href = "/home";
+</script>
+
+</body>
+</html>

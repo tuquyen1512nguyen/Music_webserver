@@ -1,0 +1,937 @@
+/* src/main/resources/static/css/style.css */
+/* ===== FONTS ===== */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* ===== RESET & BODY ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0a0a1a;
+    color: white;
+    font-family: "Poppins", sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ===== HIỆU ỨNG NỀN ĐỘNG + SÓNG ===== */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+        radial-gradient(circle at 30% 70%, rgba(138, 43, 226, 0.15), transparent 50%),
+        radial-gradient(circle at 70% 30%, rgba(72, 61, 239, 0.15), transparent 50%);
+    animation: float 25s infinite linear;
+    z-index: -2;
+}
+
+.wave {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 200px;
+    background: linear-gradient(to top, rgba(138, 43, 226, 0.3), transparent);
+    clip-path: ellipse(80% 100% at 50% 100%);
+    animation: wave 12s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(30px, -30px) rotate(5deg); }
+}
+
+@keyframes wave {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-40px); }
+}
+
+/* ===== HEADER & NAVBAR (CHUNG CHO TẤT CẢ TRANG) ===== */
+header {
+    width: 100%;
+    padding: 20px 40px;
+    background: rgba(20, 20, 45, 0.85);
+    border-bottom: 1px solid rgba(138, 43, 226, 0.35);
+    backdrop-filter: blur(15px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+    font-family: "Orbitron", sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #8a2be2, #4169e1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 15px rgba(138, 43, 226, 0.6);
+}
+
+/* Thanh tìm kiếm */
+.search-container {
+    position: relative;
+    flex: 1;
+    max-width: 500px;
+    margin: 0 30px;
+}
+
+.search-box {
+    width: 100%;
+    padding: 14px 55px 14px 22px;
+    background: rgba(30, 30, 70, 0.7);
+    border: 2px solid rgba(138, 43, 226, 0.4);
+    border-radius: 50px;
+    color: white;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.4s ease;
+}
+
+.search-box:focus {
+    border-color: #8a2be2;
+    background: rgba(40, 40, 90, 0.9);
+    box-shadow: 0 0 30px rgba(138, 43, 226, 0.6);
+    transform: scale(1.02);
+}
+
+.search-icon {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a57bff;
+    font-size: 20px;
+    pointer-events: none;
+}
+
+/* Menu */
+nav a {
+    margin-left: 25px;
+    color: #d7caff;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+nav a:hover {
+    color: white;
+    transform: translateY(-2px);
+}
+
+nav a::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #8a2be2, #4169e1);
+    transition: width 0.4s ease;
+}
+
+nav a:hover::after {
+    width: 100%;
+}
+
+.auth-btn {
+    color: #a57bff;
+    font-weight: 600;
+}
+
+/* ===== BANNER TRANG CHỦ & TÌM KIẾM ===== */
+.banner {
+    width: 90%;
+    margin: 140px auto 50px;
+    padding: 60px;
+    background: rgba(30, 30, 70, 0.6);
+    border-radius: 30px;
+    border: 1px solid rgba(138, 43, 226, 0.35);
+    box-shadow: 0 15px 50px rgba(138, 43, 226, 0.3);
+    text-align: center;
+}
+
+.banner h1 {
+    font-size: 48px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #a770ff, #6e8cff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 15px;
+}
+
+.banner p {
+    font-size: 20px;
+    color: #ccc;
+    opacity: 0.9;
+}
+
+/* ===== SECTION TITLE ===== */
+.section-title {
+    width: 90%;
+    margin: 30px auto 20px;
+    font-size: 28px;
+    color: #c9b6ff;
+    font-weight: 600;
+}
+
+/* ===== SONG GRID – 4 BÀI/HÀNG, VỪA KHÍT, ĐẸP NHƯ SPOTIFY ===== */
+.song-grid {
+    width: 90%;
+    max-width: 1400px;
+    margin: 0 auto 60px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 35px; /* ← Giãn cách rộng rãi, đẹp hơn */
+    padding: 0 20px;
+}
+
+/* Đảm bảo 4 bài/hàng dù ít bài */
+.song-grid > * {
+    min-width: 0;
+}
+
+/* Responsive – tự động giảm số cột */
+@media (max-width: 1200px) {
+    .song-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 992px) {
+    .song-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 576px) {
+    .song-grid { grid-template-columns: 1fr; gap: 30px; }
+}
+
+/* CARD SIÊU ĐẸP */
+.song-card {
+    background: rgba(35, 35, 70, 0.75);
+    border-radius: 22px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.song-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 30px 60px rgba(138, 43, 226, 0.6);
+}
+
+.song-card img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.song-card:hover img {
+    transform: scale(1.1);
+}
+
+/* Nút Play khi hover */
+.play-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.song-card:hover .play-overlay {
+    opacity: 1;
+}
+
+.play-button {
+    width: 80px;
+    height: 80px;
+    background: rgba(138, 43, 226, 0.95);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+    transition: all 0.3s ease;
+}
+
+.play-button:hover {
+    transform: scale(1.2);
+    background: #8a2be2;
+}
+
+/* Thông tin bài hát */
+.song-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #f0e6ff;
+    margin: 18px 15px 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.song-artist {
+    font-size: 15px;
+    color: #bbb;
+    opacity: 0.9;
+    margin: 0 15px 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ===== FORM LOGIN + REGISTER ===== */
+.login-container, .register-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.login-box, .register-box {
+    background: rgba(15, 15, 35, 0.7);
+    padding: 60px 50px;
+    border-radius: 30px;
+    max-width: 460px;
+    width: 100%;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(138, 43, 226, 0.5);
+    box-shadow: 0 25px 60px rgba(138, 43, 226, 0.3);
+    text-align: center;
+}
+
+.login-box h1, .register-box h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 46px;
+    margin-bottom: 15px;
+    background: linear-gradient(90deg, #8a2be2, #4169e1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.login-box h1::after, .register-box h1::after {
+    content: '';
+    display: block;
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, #8a2be2, #4169e1);
+    margin: 20px auto;
+    border-radius: 2px;
+    box-shadow: 0 0 20px #8a2be2;
+}
+
+.input-group {
+    margin-bottom: 30px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 18px 22px;
+    border: none;
+    border-radius: 15px;
+    background: rgba(30, 30, 70, 0.7);
+    color: white;
+    font-size: 17px;
+    transition: all 0.4s ease;
+}
+
+.input-group input:focus {
+    background: rgba(40, 40, 90, 0.9);
+    border: 2px solid #8a2be2;
+    box-shadow: 0 0 25px rgba(138, 43, 226, 0.6);
+    transform: scale(1.03);
+}
+
+.login-box button, .register-box button {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #8a2be2, #4169e1);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 10px 30px rgba(138, 43, 226, 0.4);
+}
+
+.login-box button:hover, .register-box button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(138, 43, 226, 0.6);
+    background: linear-gradient(135deg, #9d46ff, #5b7aff);
+}
+
+.footer-text {
+    margin-top: 40px;
+    font-size: 15px;
+    color: #bbb;
+}
+
+.footer-text a {
+    color: #ba8aff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    header { flex-direction: column; padding: 15px; text-align: center; }
+    .search-container { margin: 15px 0; max-width: 100%; }
+    nav a { margin: 0 10px; font-size: 14px; }
+}
+
+@media (max-width: 480px) {
+    .banner h1 { font-size: 36px; }
+    .song-grid { grid-template-columns: 1fr 1fr; }
+}
+/* ===== TRANG TÌM KIẾM – 4 BÀI/HÀNG VỪA KHÍT, ĐẸP NHƯ SPOTIFY ===== */
+.song-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.song-item {
+    width: 100%;
+}
+
+/* CARD SIÊU ĐẸP + NHỎ GỌN */
+.song-card {
+    background: rgba(35, 35, 70, 0.75);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.song-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 25px 50px rgba(138, 43, 226, 0.6);
+}
+
+.song-card img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.song-card:hover img {
+    transform: scale(1.08);
+}
+
+/* Nút Play khi hover */
+.play-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.song-card:hover .play-overlay {
+    opacity: 1;
+}
+
+.play-button {
+    width: 70px;
+    height: 70px;
+    background: rgba(138, 43, 226, 0.95);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    transition: all 0.3s ease;
+}
+
+.play-button:hover {
+    transform: scale(1.15);
+    background: #8a2be2;
+}
+
+/* Thông tin bài hát */
+.song-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #f0e6ff;
+    margin: 15px 10px 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.song-artist {
+    font-size: 14px;
+    color: #bbb;
+    opacity: 0.9;
+    margin: 0 10px 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* RESPONSIVE – TỰ ĐỘNG GIẢM CỘT */
+@media (max-width: 1200px) {
+    .song-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 992px) {
+    .song-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 576px) {
+    .song-grid { grid-template-columns: 1fr; gap: 25px; }
+}
+/* ===== TRANG CHI TIẾT BÀI HÁT – VIDEO TO HƠN + LỜI BÀI HÁT NHỎ GỌN HƠN ===== */
+
+/* Video to hơn, chiếm nhiều không gian hơn */
+.song-detail-container .ratio {
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 */
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    margin-bottom: 40px;
+}
+
+.song-detail-container iframe {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    border: none;
+    border-radius: 20px;
+}
+
+/* Lời bài hát nhỏ gọn, dễ đọc hơn */
+.lyric {
+    font-size: 1.02rem !important;   /* ← Nhỏ hơn một chút (trước là 1.15rem) */
+    line-height: 1.9 !important;     /* ← Khoảng cách dòng vừa phải */
+    color: #e0e7ff !important;
+    padding: 30px !important;
+    background: rgba(20, 20, 45, 0.7) !important;
+    border-radius: 20px !important;
+    border-left: 5px solid #8a2be2 !important;
+    max-height: 600px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #8a2be2 transparent;
+}
+
+/* Thanh cuộn đẹp hơn */
+.lyric::-webkit-scrollbar {
+    width: 8px;
+}
+
+.lyric::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.lyric::-webkit-scrollbar-thumb {
+    background: #8a2be2;
+    border-radius: 10px;
+}
+
+.lyric::-webkit-scrollbar-thumb:hover {
+    background: #9d46ff;
+}
+
+/* Responsive – vẫn đẹp trên mobile */
+@media (max-width: 992px) {
+    .song-detail-container .ratio {
+        padding-bottom: 56.25%;
+        margin-bottom: 30px;
+    }
+    .lyric {
+        font-size: 1rem !important;
+        line-height: 1.8 !important;
+        padding: 25px !important;
+    }
+}
+
+/* ===== TRANG CHI TIẾT BÀI HÁT – 2 CỘT VỪA KHÍT, KHÔNG BỊ NHẢY ===== */
+@media (min-width: 992px) {
+    .row > .col-lg-8 {
+        flex: 0 0 66.666667%;
+        max-width: 66.666667%;
+    }
+    .row > .col-lg-4 {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+    }
+}
+
+/* Đảm bảo không bị nhảy hàng khi màn hình thu nhỏ */
+@media (max-width: 991.98px) {
+    .row > .col-lg-8,
+    .row > .col-lg-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+/* ==== Nút Yêu thích, Playlist ==== */
+.btn-action {
+    background: linear-gradient(135deg, #8a2be2b3, #4169e1b3);
+    border: none;
+    border-radius: 50%;
+    width: 54px;
+    height: 54px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.8rem;
+    margin-right: 16px;
+    transition: background 0.3s, transform 0.22s;
+    box-shadow: 0 8px 18px rgba(138,43,226,0.16);
+    cursor: pointer;
+    outline: none;
+}
+.btn-action:hover {
+    background: #a57bff;
+    color: #fff;
+    transform: scale(1.11);
+}
+
+.btn-action.liked {
+    background: linear-gradient(135deg, #f34079, #8a2be2);
+    color: white;
+    animation: pop .3s;
+}
+
+@keyframes pop {
+    10% { transform: scale(1.18); }
+    100% { transform: scale(1); }
+}
+
+/* ==== Modal đăng nhập ==== */
+.custom-modal-bg {
+    position: fixed; left:0; top:0; width:100vw; height:100vh;
+    background: rgba(30,26,70,0.84);
+    z-index: 2500;
+    display: flex; align-items: center; justify-content: center;
+}
+.custom-modal-box {
+    background: #18183a;
+    border-radius: 30px;
+    padding: 42px 30px 30px 30px;
+    box-shadow: 0 12px 48px #8a2be2cc;
+    text-align: center;
+    max-width: 340px;
+    width:90vw;
+    animation: modalSlide 0.35s;
+}
+@keyframes modalSlide {
+    0% {transform: translateY(-80px) scale(0.95); opacity: 0;}
+    100% {transform: translateY(0) scale(1); opacity: 1;}
+}
+.custom-modal-box h4 {
+    color: #a770ff;
+    margin-bottom: 18px;
+    font-size: 1.3rem;
+}
+.custom-modal-btn {
+    margin: 14px 8px 0 8px;
+    padding: 12px 22px;
+    border-radius: 20px;
+    border: none;
+    background: linear-gradient(90deg, #8a2be2, #4169e1);
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: background 0.2s, transform 0.18s;
+    cursor:pointer;
+    box-shadow: 0 4px 12px #8a2be288;
+}
+.custom-modal-btn.cancel {
+    background: #343a40;
+    color: #d7caff;
+}
+.custom-modal-btn:hover:not(.cancel) { background: #a57bff; }
+.custom-modal-btn.cancel:hover { background: #232327; color: #fff;}
+/* ===== Thư viện Album/Playlist - TheAura Style ===== */
+.library-section {
+    width: 95%;
+    margin: 42px auto 0 auto;
+}
+.library-section h2 {
+    font-size: 24px;
+    color: #c9b6ff;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.12;
+}
+.library-section h2 i {
+    color: #a770ff;
+    font-size: 1.2em;
+    filter: drop-shadow(0 2px 16px #8a2be2aa);
+}
+.library-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+    gap: 25px;
+}
+.library-card {
+    background: rgba(35,35,70,0.62);
+    border: 1.5px solid rgba(138,43,226,0.22);
+    border-radius: 19px;
+    padding: 15px 14px 19px 14px;
+    transition: 0.33s cubic-bezier(.23,.62,.28,.99);
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    min-height: 240px;
+    box-shadow: 0 8px 38px rgba(138,43,226,0.07);
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.library-card:hover {
+    transform: translateY(-8px) scale(1.025);
+    box-shadow: 0 0 32px 10px #8a2be230;
+    border: 2px solid #8a2be2bb;
+    z-index: 2;
+}
+.library-card img {
+    width:105px;
+    height:105px;
+    border-radius:14px;
+    margin-bottom:13px;
+    object-fit: cover;
+    box-shadow: 0 2px 20px rgba(138,43,226,0.16);
+}
+.library-card-title {
+    font-size:17px;
+    font-weight:700;
+    color: #e0e7ff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.library-card-sub {
+    font-size:14px;
+    opacity:0.83;
+    color: #cac6ee;
+    margin-top:2px;
+    margin-bottom:4px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+/* Nút phát nhanh */
+.library-quick-play-btn {
+    position: absolute;
+    right: 19px;
+    top: 19px;
+    background: linear-gradient(135deg, #a57bff 60%, #4169e1 100%);
+    box-shadow: 0 2px 10px #8a2be288;
+    color: #fff;
+    border: none;
+    width:38px;
+    height:38px;
+    border-radius: 19px;
+    font-size:1.1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: .26s cubic-bezier(.23,1.52,.28,1);
+    z-index: 4;
+}
+.library-card:hover .library-quick-play-btn { opacity: 1;}
+/* Responsive */
+@media (max-width: 800px) {
+    .library-section { width: 99%; padding: 0; }
+    .library-grid { gap: 15px; }
+    .library-card img { width:70px; height:70px; }
+}
+@media (max-width: 600px) {
+    .library-section h2 { font-size: 16.9px; gap:7px; }
+    .library-grid { grid-template-columns: 1fr 1fr; gap: 12.5px;}
+}
+@media (max-width: 400px){
+    .library-grid { grid-template-columns: 1fr; }
+}
+/* ===== Khám phá (Explore) - TheAura Music ===== */
+.explore-section {
+    width: 95%;
+    margin: 44px auto 0 auto;
+}
+.explore-section h2 {
+    font-size: 24px;
+    color: #c9b6ff;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.12;
+}
+.explore-section h2 i {
+    color: #a770ff;
+    font-size: 1.2em;
+    filter: drop-shadow(0 2px 16px #8a2be2aa);
+}
+.explore-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+    gap: 25px;
+}
+.explore-card {
+    background: rgba(35,35,70,0.62);
+    border: 1.5px solid rgba(138,43,226,0.22);
+    border-radius: 19px;
+    padding: 15px 14px 19px 14px;
+    transition: 0.33s cubic-bezier(.23,.62,.28,.99);
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    min-height: 235px;
+    box-shadow: 0 8px 38px rgba(138,43,226,0.07);
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.explore-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 0 32px 10px #8a2be230;
+    border: 2px solid #8a2be2bb;
+    z-index: 2;
+}
+.explore-card img {
+    width:105px;
+    height:105px;
+    border-radius:14px;
+    margin-bottom:13px;
+    object-fit: cover;
+    box-shadow: 0 2px 20px rgba(138,43,226,0.13);
+}
+.explore-card-title {
+    font-size:17px;
+    font-weight:700;
+    color: #e0e7ff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.explore-card-sub {
+    font-size:14px;
+    opacity:0.82;
+    color: #cac6ee;
+    margin-top:2px;
+    margin-bottom:4px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+/* Nút phát nhanh */
+.explore-quick-play-btn {
+    position: absolute;
+    right: 19px;
+    top: 19px;
+    background: linear-gradient(135deg, #a57bff 60%, #4169e1 100%);
+    box-shadow: 0 2px 10px #8a2be288;
+    color: #fff;
+    border: none;
+    width:38px;
+    height:38px;
+    border-radius: 19px;
+    font-size:1.1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: .26s cubic-bezier(.23,1.52,.28,1);
+    z-index: 4;
+}
+.favorite-btn-search {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0,0,0,0.4);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 2;
+}
+
+.favorite-btn-search:hover {
+    background: rgba(255,71,87,0.7);
+    transform: scale(1.1);
+}
+
+.favorite-btn-search i.fas {
+    color: #ff4757 !important;
+    animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+    0% { transform: scale(1); }
+    14% { transform: scale(1.3); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.3); }
+    70% { transform: scale(1); }
+}
+.explore-card:hover .explore-quick-play-btn { opacity: 1;}
+/* Responsive */
+@media (max-width: 800px) {
+    .explore-section { width: 99%; padding: 0; }
+    .explore-grid { gap: 15px; }
+    .explore-card img { width:70px; height:70px; }
+}
+@media (max-width: 600px) {
+    .explore-section h2 { font-size: 16.8px; gap:7px; }
+    .explore-grid { grid-template-columns: 1fr 1fr; gap: 12.5px;}
+}
+@media (max-width: 400px){
+    .explore-grid { grid-template-columns: 1fr; }
+}

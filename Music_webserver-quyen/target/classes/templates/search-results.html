@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Tìm kiếm: ' + ${keyword} + ' - TheAura Music'">Kết quả tìm kiếm</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<!-- Header riêng cho đã login / chưa login -->
+<div sec:authorize="isAuthenticated()">
+    <th:block th:replace="~{layout/header-private :: header}"></th:block>
+</div>
+<div sec:authorize="isAnonymous()">
+    <th:block th:replace="~{layout/header-public :: header}"></th:block>
+</div>
+
+<div class="container py-5" style="margin-top: 120px;">
+
+    <!-- Tiêu đề kết quả tìm kiếm -->
+    <div class="mb-5 py-4" style="padding-left: 20px;">
+        <h1 class="display-4 fw-bold mb-3">
+            Kết quả tìm kiếm cho
+            <span class="text-warning" th:text="${keyword}">từ khóa</span>
+        </h1>
+    </div>
+
+    <!-- Danh sách bài hát – 4 bài/hàng, responsive -->
+    <div class="song-grid" th:if="${songs != null and !songs.isEmpty()}">
+        <div th:each="song : ${songs}" class="song-item">
+            <!-- Chỉ render khi song không null -->
+            <div class="song-card position-relative" th:if="${song != null}">
+                <div class="position-relative overflow-hidden rounded-3">
+                    <!-- Thumbnail với fallback nếu null -->
+                    <img th:src="${song.thumbnail != null ? song.thumbnail : 'https://via.placeholder.com/400x400/e9ecef/6c757d?text=No+Image'}"
+                         class="img-fluid w-100" style="height: 100%; object-fit: cover;" alt="thumbnail">
+
+                    <!-- Nút Play overlay -->
+                    <div class="play-overlay">
+                        <a th:href="@{'/songs/' + ${song.id}}" class="play-button">▶</a>
+                    </div>
+
+                    <!-- NÚT YÊU THÍCH TRÊN THUMBNAIL – DÙNG CSS CÓ SẴN TRONG style.css -->
+                    <button class="favorite-btn-search"
+                            th:onclick="'toggleFavoriteFromSearch(' + ${song.id} + ', this)'"
+                            title="Yêu thích">
+                        <i class="fa-heart far" style="font-size: 1.8rem; color: white; text-shadow: 0 0 10px black;"></i>
+                    </button>
+                </div>
+
+                <!-- Thông tin bài hát -->
+                <div class="p-3 text-center">
+                    <h5 class="song-title mb-1" th:text="${song.title != null ? song.title : 'Không rõ tên bài'}">Tên bài hát</h5>
+                    <p class="song-artist mb-0" th:text="${song.artist != null ? song.artist : 'Không rõ ca sĩ'}">Ca sĩ</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Không có kết quả tìm kiếm -->
+    <div class="text-center py-5" th:if="${songs == null or songs.isEmpty()}">
+        <h2 class="mb-4 text-muted">Không tìm thấy bài hát nào cho "<span th:text="${keyword}"></span>"</h2>
+        <p class="text-muted mb-4">Thử tìm với từ khóa khác nhé!</p>
+        <a href="/" class="btn btn-primary btn-lg px-5 rounded-pill shadow">Về trang chủ</a>
+    </div>
+</div>
+
+<!-- JavaScript toggle yêu thích từ trang tìm kiếm -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function toggleFavoriteFromSearch(songId, button) {
+        const icon = button.querySelector('i');
+
+        fetch('/favorite/toggle?songId=' + songId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .then(response => response.text())
+            .then(result => {
+                if (result === "ADDED") {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    alert("❤️ Đã thêm vào yêu thích!");
+                } else if (result === "REMOVED") {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    alert("💔 Đã bỏ yêu thích");
+                } else {
+                    alert("Có lỗi xảy ra, vui lòng thử lại!");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Lỗi kết nối mạng!");
+            });
+    }
+    /*]]>*/
+</script>
+
+</body>
+</html>
