@@ -519,81 +519,312 @@ nav a:hover::after {
 @media (max-width: 576px) {
     .song-grid { grid-template-columns: 1fr; gap: 25px; }
 }
-/* ===== TRANG CHI TIẾT BÀI HÁT – VIDEO TO HƠN + LỜI BÀI HÁT NHỎ GỌN HƠN ===== */
+/* ==================== SONG DETAIL PAGE - ĐẸP HOÀN HẢO ==================== */
 
-/* Video to hơn, chiếm nhiều không gian hơn */
-.song-detail-container .ratio {
+.song-detail-container {
+    max-width: 1600px;
+    margin: 140px auto 100px;
+    padding: 0 30px;
+}
+
+/* Layout 2 cột */
+.row {
+    display: flex;
+    gap: 50px;
+    flex-wrap: wrap;
+    align-items: start;
+}
+
+/* Cột trái (video + lyric) */
+.col-lg-8 {
+    flex: 2 1 700px;
+    min-width: 340px;
+}
+
+/* Cột phải (thumbnail + gợi ý) */
+.col-lg-4 {
+    flex: 1 1 350px;
+    min-width: 300px;
+    position: sticky;
+    top: 120px;
+    align-self: start;
+}
+
+/* Tiêu đề bài hát */
+.section-title {
+    font-size: 48px;
+    font-weight: 800;
+    margin: 0 0 10px 0;
+    background: linear-gradient(90deg, #8a2be2, #4169e1, #a770ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.song-artist {
+    font-size: 24px;
+    color: #b0b8d0;
+    margin-bottom: 40px;
+    font-weight: 500;
+}
+
+/* Video iframe */
+.ratio {
+    position: relative;
+    width: 100%;
     height: 0;
     padding-bottom: 56.25%; /* 16:9 */
-    position: relative;
-    border-radius: 20px;
+    border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
     margin-bottom: 40px;
 }
 
-.song-detail-container iframe {
+.ratio iframe {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     border: none;
-    border-radius: 20px;
 }
 
-/* Lời bài hát nhỏ gọn, dễ đọc hơn */
-.lyric {
-    font-size: 1.02rem !important;   /* ← Nhỏ hơn một chút (trước là 1.15rem) */
-    line-height: 1.9 !important;     /* ← Khoảng cách dòng vừa phải */
-    color: #e0e7ff !important;
-    padding: 30px !important;
-    background: rgba(20, 20, 45, 0.7) !important;
-    border-radius: 20px !important;
-    border-left: 5px solid #8a2be2 !important;
-    max-height: 600px;
+.ratio > div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 24px;
+    background: linear-gradient(145deg, #1e1e2f, #181824);
+}
+
+/* Nút thêm vào playlist */
+.btn-add-to-playlist {
+    background: linear-gradient(135deg, #8a2be2, #4169e1);
+    color: white;
+    padding: 16px 40px;
+    border: none;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 10px 30px rgba(138, 43, 226, 0.3);
+}
+
+.btn-add-to-playlist:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(138, 43, 226, 0.5);
+    background: linear-gradient(135deg, #a770ff, #6495ed);
+}
+
+/* Modal thêm playlist */
+.playlist-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.playlist-modal.show {
+    display: flex;
+}
+
+.playlist-modal-content {
+    background: linear-gradient(145deg, #1e1e2f, #181824);
+    border-radius: 24px;
+    padding: 30px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(138, 43, 226, 0.4);
+}
+
+.playlist-modal-header {
+    font-size: 22px;
+    color: #a770ff;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-control {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(30, 30, 70, 0.8);
+    color: white;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.btn-modal {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+.btn-create {
+    background: linear-gradient(135deg, #8a2be2, #4169e1);
+    color: white;
+}
+
+.btn-create:hover {
+    background: linear-gradient(135deg, #a770ff, #6495ed);
+}
+
+.btn-cancel {
+    background: rgba(255, 107, 107, 0.2);
+    color: #ff6b6b;
+}
+
+.btn-cancel:hover {
+    background: #ff6b6b;
+    color: white;
+}
+
+.playlist-list {
+    max-height: 300px;
     overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #8a2be2 transparent;
+    margin: 15px 0;
 }
 
-/* Thanh cuộn đẹp hơn */
-.lyric::-webkit-scrollbar {
-    width: 8px;
+.playlist-item {
+    padding: 14px;
+    background: rgba(30, 30, 70, 0.6);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: white;
 }
 
-.lyric::-webkit-scrollbar-track {
-    background: transparent;
+.playlist-item:hover {
+    background: rgba(138, 43, 226, 0.3);
+    transform: translateX(8px);
 }
 
-.lyric::-webkit-scrollbar-thumb {
-    background: #8a2be2;
-    border-radius: 10px;
+/* Lời bài hát */
+.lyric {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #e0e7ff;
+    white-space: pre-line;
+    background: rgba(30, 30, 70, 0.3);
+    padding: 30px;
+    border-radius: 20px;
+    margin-top: 20px;
 }
 
-.lyric::-webkit-scrollbar-thumb:hover {
-    background: #9d46ff;
+/* Cột phải - Thumbnail + Gợi ý */
+.col-lg-4 img {
+    width: 100%;
+    max-height: 480px;
+    object-fit: cover;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(138, 43, 226, 0.2);
+    margin-bottom: 30px;
 }
 
-/* Responsive – vẫn đẹp trên mobile */
+/* Lượt xem badge */
+.col-lg-4 > div > div {
+    display: inline-block;
+    background: rgba(138, 43, 226, 0.15);
+    padding: 10px 30px;
+    border-radius: 30px;
+    font-size: 18px;
+}
+
+/* Gợi ý nghe tiếp */
+.song-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 16px;
+    background: rgba(35, 35, 70, 0.9);
+    border-radius: 18px;
+    transition: all 0.4s ease;
+    cursor: pointer;
+}
+
+.song-card:hover {
+    background: rgba(138, 43, 226, 0.2);
+    transform: translateX(8px);
+}
+
+.song-card img {
+    width: 70px;
+    height: 70px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.song-title {
+    font-size: 18px;
+    color: white;
+    font-weight: 600;
+    margin: 0;
+}
+
+.song-artist {
+    font-size: 15px;
+    color: #b0b8d0;
+    margin: 4px 0 0 0;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .row {
+        gap: 30px;
+    }
+    .section-title {
+        font-size: 40px;
+    }
+}
+
 @media (max-width: 992px) {
-    .song-detail-container .ratio {
-        padding-bottom: 56.25%;
-        margin-bottom: 30px;
+    .song-detail-container {
+        margin-top: 120px;
+        padding: 0 20px;
     }
-    .lyric {
-        font-size: 1rem !important;
-        line-height: 1.8 !important;
-        padding: 25px !important;
+    .row {
+        flex-direction: column;
+    }
+    .col-lg-4 {
+        position: static;
+    }
+    .section-title {
+        font-size: 36px;
+    }
+    .song-artist {
+        font-size: 22px;
     }
 }
 
-/* ===== TRANG CHI TIẾT BÀI HÁT – 2 CỘT VỪA KHÍT, KHÔNG BỊ NHẢY ===== */
-@media (min-width: 992px) {
-    .row > .col-lg-8 {
-        flex: 0 0 66.666667%;
-        max-width: 66.666667%;
+@media (max-width: 576px) {
+    .section-title {
+        font-size: 32px;
     }
-    .row > .col-lg-4 {
-        flex: 0 0 33.333333%;
-        max-width: 33.333333%;
+    .song-artist {
+        font-size: 20px;
+    }
+    .btn-add-to-playlist {
+        padding: 14px 30px;
+        font-size: 16px;
     }
 }
 
