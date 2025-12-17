@@ -1,119 +1,141 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Thư viện • TheAura Music</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thư viện • TheAura Music</title>
 
-    <!-- Font Awesome cho icon -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- style.css đã chứa toàn bộ CSS chuyên dụng cho giao diện này -->
-    <link rel="stylesheet" href="/css/style.css">
+    <!-- CSS chính -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<th:block th:replace="~{layout/header-private :: header}"></th:block>
 
-<div class="library-section">
-    <br>
-    <br>
-    <br>
-    <h2><i class="fa fa-music"></i> Danh sách phát của bạn</h2>
+<!-- Header chung -->
+<div th:replace="~{header}"></div>
 
-    <!-- Nếu có playlist -->
+<!-- ==================== DANH SÁCH PHÁT ==================== -->
+<section class="library-section">
+    <h2 class="section-title">
+        <i class="fa fa-music"></i> Danh sách phát của bạn
+    </h2>
+
     <div class="library-grid" th:if="${myPlaylists != null && !myPlaylists.isEmpty()}">
-        <div th:each="playlist : ${myPlaylists}" class="library-card" style="position: relative; cursor: pointer;">
-            <!-- Ảnh bìa -->
-            <img th:src="${!playlist.songs.isEmpty() ? playlist.songs[0].song.thumbnail : 'https://i.imgur.com/CUe7RkV.jpg'}" alt="cover">
+        <div th:each="playlist : ${myPlaylists}" class="library-card">
+            <!-- Ảnh bìa playlist -->
+            <img th:src="${!playlist.songs.isEmpty() ? playlist.songs[0].song.thumbnail : 'https://i.imgur.com/CUe7RkV.jpg'}"
+                 alt="playlist cover" class="library-thumb">
 
-            <div class="library-card-title" th:text="${playlist.name}">Tên chủ đề</div>
-            <div class="library-card-sub" th:text="${#lists.size(playlist.songs) + ' bài hát'}">Số bài</div>
+            <div class="library-info">
+                <h3 class="library-title" th:text="${playlist.name}">Tên playlist</h3>
+                <p class="library-sub" th:text="${#lists.size(playlist.songs)} + ' bài hát'">0 bài hát</p>
+            </div>
 
-            <!-- Link bấm toàn card → vào trang chi tiết playlist -->
-            <a th:href="@{'/playlist/' + ${playlist.id}}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></a>
+            <!-- Link toàn card → xem chi tiết playlist -->
+            <a th:href="@{'/playlist/' + ${playlist.id}}" class="card-overlay"></a>
 
-            <!-- Nút shuffle (phát ngẫu nhiên) – không bị link chính che -->
-            <button class="library-quick-play-btn" style="position: relative; z-index: 2;"
-                    th:attr="onclick=|location.href='/playlist/view/' + ${playlist.id} + '/shuffle'|"
-                    title="Phát ngẫu nhiên">
+            <!-- Nút phát ngẫu nhiên -->
+            <button class="quick-play-btn" title="Phát ngẫu nhiên">
                 <i class="fa fa-random"></i>
             </button>
         </div>
     </div>
 
-    <!-- Nếu chưa có playlist nào -->
-    <div class="text-center py-5" th:if="${myPlaylists == null or myPlaylists.isEmpty()}">
-        <p style="font-size: 1.2rem; color: #aaa;">Bạn chưa có danh sách phát nào.</p>
-        <p style="color: #ccc;">Hãy thêm bài hát từ trang nghe nhạc để tạo chủ đề riêng nhé!</p>
-        <a href="/" class="btn btn-primary mt-3">Về trang chủ tìm nhạc</a>
+    <!-- Chưa có playlist -->
+    <div class="empty-state" th:if="${myPlaylists == null or myPlaylists.isEmpty()}">
+        <i class="fa fa-music empty-icon"></i>
+        <p>Bạn chưa có danh sách phát nào.</p>
+        <p class="sub-text">Hãy thêm bài hát từ trang nghe nhạc để tạo playlist riêng nhé!</p>
+        <a th:href="@{/}" class="btn-primary">Khám phá nhạc ngay</a>
     </div>
-</div>
+</section>
 
-    <div class="text-center py-5" th:if="${myPlaylists == null or myPlaylists.isEmpty()}">
-        <p>Bạn chưa có danh sách phát nào. Hãy thêm bài hát từ trang nghe nhạc để tạo nhé!</p>
-        <a href="/" class="btn btn-primary">Về trang chủ</a>
-    </div>
-</div>
-
-<!-- PHẦN BÀI HÁT YÊU THÍCH – AN TOÀN, ĐẸP, KHÔNG LỖI -->
-<div class="library-section">
-    <h2><i class="fa fa-heart" style="color:#ff4757"></i> Bài hát yêu thích</h2>
+<!-- ==================== BÀI HÁT YÊU THÍCH ==================== -->
+<section class="library-section">
+    <h2 class="section-title">
+        <i class="fa fa-heart" style="color:#ff4757"></i> Bài hát yêu thích
+    </h2>
 
     <div class="library-grid" th:if="${favoriteSongs != null && !favoriteSongs.isEmpty()}">
-        <div th:each="song : ${favoriteSongs}" class="library-card position-relative" th:if="${song != null}">
-            <img th:src="${song.thumbnail != null ? song.thumbnail : 'https://via.placeholder.com/400x400/e9ecef/6c757d?text=No+Image'}" alt="thumbnail">
+        <div th:each="song : ${favoriteSongs}" class="library-card" th:if="${song != null}">
+            <img th:src="${song.thumbnail ?: 'https://via.placeholder.com/400x400/e9ecef/6c757d?text=No+Image'}"
+                 alt="song thumbnail" class="library-thumb">
 
-            <div class="library-card-title" th:text="${song.title != null ? song.title : 'Không rõ tên bài'}">Tên bài hát</div>
-            <div class="library-card-sub" th:text="${song.artist != null ? song.artist : 'Không rõ ca sĩ'}">Ca sĩ</div>
+            <div class="library-info">
+                <h3 class="library-title" th:text="${song.title ?: 'Không rõ tên bài'}">Tên bài hát</h3>
+                <p class="library-sub" th:text="${song.artist ?: 'Không rõ ca sĩ'}">Ca sĩ</p>
+            </div>
 
-            <!-- BẤM VÀO CARD → VÀO NGHE NHẠC (DÙNG <a> THAY onclick ĐỂ TRÁNH LỖI) -->
-            <a th:href="@{'/songs/' + ${song.id}}" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1;"></a>
+            <a th:href="@{'/songs/' + ${song.id}}" class="card-overlay"></a>
 
-            <!-- NÚT PLAY NHỎ -->
-            <button class="library-quick-play-btn" style="position:relative; z-index:2;" title="Phát bài hát">
+            <button class="quick-play-btn" title="Phát bài hát">
                 <i class="fa fa-play"></i>
             </button>
         </div>
     </div>
 
-    <!-- Nếu chưa có bài yêu thích -->
-    <div class="text-center py-5" th:if="${favoriteSongs == null or favoriteSongs.isEmpty()}">
-        <p class="fs-4 text-muted">Bạn chưa có bài hát yêu thích nào.</p>
-        <a href="/" class="btn btn-outline-primary rounded-pill">Tìm nhạc để yêu thích</a>
+    <!-- Chưa có bài yêu thích -->
+    <div class="empty-state" th:if="${favoriteSongs == null or favoriteSongs.isEmpty()}">
+        <i class="fa fa-heart empty-icon" style="color:#ff4757"></i>
+        <p>Bạn chưa có bài hát yêu thích nào.</p>
+        <a th:href="@{/}" class="btn-primary">Tìm nhạc để yêu thích</a>
     </div>
-</div>
+</section>
 
-<div class="library-section">
-    <h2><i class="fa fa-compact-disc"></i> Album đã lưu</h2>
+<!-- ==================== ALBUM ĐÃ LƯU (GIẢ) ==================== -->
+<section class="library-section">
+    <h2 class="section-title">
+        <i class="fa fa-compact-disc"></i> Album đã lưu
+    </h2>
+
     <div class="library-grid">
         <div class="library-card">
-            <img src="https://i.imgur.com/Z9qQZ8k.jpeg" alt="Divide">
-            <div class="library-card-title">Divide</div>
-            <div class="library-card-sub">Ed Sheeran</div>
-            <button class="library-quick-play-btn" title="Phát album"><i class="fa fa-play"></i></button>
+            <img src="https://i.imgur.com/Z9qQZ8k.jpeg" alt="Divide" class="library-thumb">
+            <div class="library-info">
+                <h3 class="library-title">Divide</h3>
+                <p class="library-sub">Ed Sheeran</p>
+            </div>
+            <button class="quick-play-btn" title="Phát album">
+                <i class="fa fa-play"></i>
+            </button>
         </div>
         <div class="library-card">
-            <img src="https://i.imgur.com/XcT7bhu.jpeg" alt="Uncover">
-            <div class="library-card-title">Uncover</div>
-            <div class="library-card-sub">Alan Walker</div>
-            <button class="library-quick-play-btn" title="Phát album"><i class="fa fa-play"></i></button>
+            <img src="https://i.imgur.com/XcT7bhu.jpeg" alt="Uncover" class="library-thumb">
+            <div class="library-info">
+                <h3 class="library-title">Uncover</h3>
+                <p class="library-sub">Alan Walker</p>
+            </div>
+            <button class="quick-play-btn" title="Phát album">
+                <i class="fa fa-play"></i>
+            </button>
         </div>
     </div>
-</div>
+</section>
 
-<div class="library-section">
-    <h2><i class="fa fa-star"></i> Nghệ sĩ theo dõi</h2>
+<!-- ==================== NGHỆ SĨ THEO DÕI (GIẢ) ==================== -->
+<section class="library-section">
+    <h2 class="section-title">
+        <i class="fa fa-star"></i> Nghệ sĩ theo dõi
+    </h2>
+
     <div class="library-grid">
         <div class="library-card">
-            <img src="https://i.imgur.com/kQKQ1AN.jpeg" alt="Alan Walker">
-            <div class="library-card-title">Alan Walker</div>
+            <img src="https://i.imgur.com/kQKQ1AN.jpeg" alt="Alan Walker" class="library-thumb">
+            <div class="library-info">
+                <h3 class="library-title">Alan Walker</h3>
+            </div>
         </div>
         <div class="library-card">
-            <img src="https://i.imgur.com/MTd8NHo.jpeg" alt="Taylor Swift">
-            <div class="library-card-title">Taylor Swift</div>
+            <img src="https://i.imgur.com/MTd8NHo.jpeg" alt="Taylor Swift" class="library-thumb">
+            <div class="library-info">
+                <h3 class="library-title">Taylor Swift</h3>
+            </div>
         </div>
     </div>
-</div>
+</section>
+
+<div class="wave"></div>
 </body>
 </html>

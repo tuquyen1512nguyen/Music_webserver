@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ • TheAura Music</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS chính -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Header chung -->
+<div th:replace="~{header}"></div>
+<!-- Profile Container -->
+<div class="profile-page-container">
+    <div class="profile-card">
+
+        <!-- Header chào mừng -->
+        <div class="profile-header-section">
+            <i class="fa fa-user-circle profile-avatar-icon"></i>
+            <h2>Hồ sơ cá nhân</h2>
+            <p class="greeting-text">
+                Xin chào,
+                <strong th:text="${#authentication?.principal?.username} ?: 'User'">User</strong>!
+            </p>
+        </div>
+
+        <!-- Body form -->
+        <div class="profile-body-section">
+
+            <!-- Thông báo thành công -->
+            <div th:if="${successMessage}" class="alert-box success">
+                <i class="fa fa-check-circle"></i>
+                <span th:text="${successMessage}"></span>
+            </div>
+
+            <!-- Thông báo lỗi -->
+            <div th:if="${errorMessage}" class="alert-box error">
+                <i class="fa fa-exclamation-triangle"></i>
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <!-- Form đổi mật khẩu -->
+            <h4 class="section-title-center">Thay đổi mật khẩu</h4>
+            <form th:action="@{/profile/change-password}" method="post" class="profile-form">
+
+                <div class="input-group">
+                    <label for="currentPassword">Mật khẩu hiện tại</label>
+                    <input type="password" id="currentPassword" name="currentPassword" class="profile-input" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="newPassword">Mật khẩu mới</label>
+                    <input type="password" id="newPassword" name="newPassword" class="profile-input" required minlength="6">
+                </div>
+
+                <div class="input-group">
+                    <label for="confirmPassword">Xác nhận mật khẩu mới</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="profile-input" required minlength="6">
+                </div>
+
+                <!-- Nút Cập nhật - căn giữa -->
+                <div class="button-container">
+                    <button type="submit" class="btn-update">
+                        <i class="fa fa-save"></i> Cập nhật mật khẩu
+                    </button>
+                </div>
+            </form>
+
+            <!-- Nút Đăng xuất - căn giữa -->
+            <div class="button-container logout-btn">
+                <a th:href="@{/logout}" class="btn-logout-profile">
+                    <i class="fa fa-sign-out-alt"></i> Đăng xuất
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Hiệu ứng sóng -->
+<div class="wave"></div>
+</body>
+</html>

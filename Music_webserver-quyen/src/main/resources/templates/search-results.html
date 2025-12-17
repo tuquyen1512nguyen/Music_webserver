@@ -11,13 +11,7 @@
 <body>
 
 <!-- Header riêng cho đã login / chưa login -->
-<div sec:authorize="isAuthenticated()">
-    <th:block th:replace="~{layout/header-private :: header}"></th:block>
-</div>
-<div sec:authorize="isAnonymous()">
-    <th:block th:replace="~{layout/header-public :: header}"></th:block>
-</div>
-
+<div th:replace="~{header}"></div>
 <div class="container py-5" style="margin-top: 120px;">
 
     <!-- Tiêu đề kết quả tìm kiếm -->

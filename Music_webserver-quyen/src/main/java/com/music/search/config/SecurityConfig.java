@@ -1,4 +1,3 @@
-// src/main/java/com/music/search/config/SecurityConfig.java
 package com.music.search.config;
 
 import com.music.search.service.impl.UserDetailsServiceImpl;
@@ -16,45 +15,48 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsServiceImpl userDetailsService; // ← ĐÚNG 100%
+    private final UserDetailsServiceImpl userDetailsService;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // hoặc bật + thêm token nếu muốn
+                .csrf(csrf -> csrf.disable())
+
                 .authorizeHttpRequests(auth -> auth
-                        // 1. CÁC TRANG CÔNG KHAI – AI CŨNG VÀO ĐƯỢC (KHÔNG CẦN LOGIN)
-                        .requestMatchers(
-                                "/", "/index",
-                                "/search", "/songs/**",      // ← TÌM KIẾM + CHI TIẾT BÀI HÁT
-                                "/explore",
-                                "/css/**", "/js/**", "/images/**", "/fonts/**", "/img/**"
-                        ).permitAll()
-
-                        // 2. Trang đăng nhập, đăng ký
+                        .requestMatchers("/", "/index", "/explore", "/search", "/songs/**", "/css/**", "/js/**", "/images/**", "/img/**", "/fonts/**", "/favicon.ico").permitAll()
                         .requestMatchers("/login", "/register", "/api/auth/**").permitAll()
-
-                        // 3. Các trang sau khi đăng nhập
-                        .requestMatchers("/home", "/library").authenticated()
-
-                        // 4. Admin (nếu có)
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-
-                        // 5. Tất cả còn lại → yêu cầu đăng nhập
+                        .requestMatchers("/library", "/profile", "/recent", "/profile/**").authenticated()
                         .anyRequest().authenticated()
                 )
+
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/home", true)
+                        .loginProcessingUrl("/login")
+                        // SỬA THÀNH SUCCESSHANDLER ĐỂ PHÂN BIỆT ADMIN/USER
+                        .successHandler((request, response, authentication) -> {
+                            boolean isAdmin = authentication.getAuthorities().stream()
+                                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                            if (isAdmin) {
+                                response.sendRedirect("/admin"); // Admin → dashboard admin
+                            } else {
+                                response.sendRedirect("/index"); // User thường → trang chủ
+                            }
+                        })
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
+
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/")
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/?logout=true")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                         .permitAll()
                 );
 
         return http.build();
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {

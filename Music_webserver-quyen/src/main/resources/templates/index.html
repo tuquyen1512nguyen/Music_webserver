@@ -1,4 +1,3 @@
-<!-- src/main/resources/templates/index.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
@@ -6,14 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TheAura Music</title>
+
+    <!-- Font Awesome để icon trong header hiển thị -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS chính của bạn -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
-<!-- DÙNG HEADER CHUNG – MENU SẼ ĐỔI ĐÚNG KHI ĐĂNG NHẬP -->
-<th:block th:replace="~{layout/header-public :: header}"></th:block>
-
-<!-- GIỮ NGUYÊN 100% NỘI DUNG + CSS CŨ CỦA EM -->
+<!-- Header chung (gộp public/private) -->
+<div th:replace="~{header}"></div>
+<!-- NỘI DUNG TRANG CHỦ GIỮ NGUYÊN 100% -->
 <section class="banner">
     <h1>Khám phá âm nhạc mọi lúc</h1>
     <p>Nghe nhạc miễn phí – Không cần đăng nhập!</p>
@@ -32,9 +35,7 @@
                 <img th:src="${song.thumbnail} ?: 'https://via.placeholder.com/400x400/e9ecef/6c757d?text=No+Image'"
                      class="img-fluid w-100" style="height: 260px; object-fit: cover;">
                 <div class="play-overlay">
-                    <a th:href="@{'/songs/' + ${song.id}}" class="play-button">
-                        ▶
-                    </a>
+                    <a th:href="@{'/songs/' + ${song.id}}" class="play-button"> ▶ </a>
                 </div>
             </div>
             <div class="p-3 text-center">
@@ -61,7 +62,6 @@
         <div class="song-title">Shape of You</div>
         <div class="song-artist">Ed Sheeran</div>
     </div>
-    <!-- Thêm bao nhiêu card tùy thích -->
 </div>
 
 </body>

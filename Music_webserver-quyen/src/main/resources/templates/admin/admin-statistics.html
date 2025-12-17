@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống kê • TheAura Music</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{header}"></div>
+
+<div class="admin-dashboard-container">
+    <h2 class="admin-section-title"><i class="fa fa-chart-bar"></i> Báo cáo & Thống kê chi tiết</h2>
+
+    <div class="admin-stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon purple"><i class="fa fa-chart-line"></i></div>
+            <div class="stat-content">
+                <h3>25%</h3>
+                <p>Tăng trưởng người dùng (tháng này)</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fa fa-arrow-up"></i></div>
+            <div class="stat-content">
+                <h3>42%</h3>
+                <p>Tăng lượt nghe</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon orange"><i class="fa fa-clock"></i></div>
+            <div class="stat-content">
+                <h3>3.5 giờ</h3>
+                <p>Thời gian nghe trung bình/ngày</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fa fa-globe"></i></div>
+            <div class="stat-content">
+                <h3>68%</h3>
+                <p>Người dùng từ Việt Nam</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="chart-placeholder">
+        <p>Biểu đồ thống kê sẽ được thêm sau (Chart.js hoặc thư viện khác)</p>
+    </div>
+</div>
+
+<div class="wave"></div>
+</body>
+</html>

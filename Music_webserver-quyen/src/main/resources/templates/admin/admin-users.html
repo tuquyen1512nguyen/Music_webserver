@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý người dùng • TheAura Music</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{header}"></div>
+
+<div class="admin-dashboard-container">
+    <h2 class="admin-section-title"><i class="fa fa-users"></i> Quản lý người dùng</h2>
+
+    <div class="table-container">
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>Vai trò</th>
+                <th>Ngày tạo</th>
+                <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}">1</td>
+                <td th:text="${user.username}">admin</td>
+                <td th:text="${user.fullName}">Quản Trị Viên</td>
+                <td th:text="${user.email}">admin@theaura.com</td>
+                <td><span class="role-badge" th:text="${user.role}">ADMIN</span></td>
+                <td th:text="${#dates.format(user.createdAt, 'dd/MM/yyyy')}">17/12/2025</td>
+                <td>
+                    <button class="btn-action btn-edit"><i class="fa fa-edit"></i></button>
+                    <button class="btn-action btn-delete"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="wave"></div>
+</body>
+</html>

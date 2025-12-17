@@ -685,113 +685,199 @@ nav a:hover::after {
 }
 .custom-modal-btn:hover:not(.cancel) { background: #a57bff; }
 .custom-modal-btn.cancel:hover { background: #232327; color: #fff;}
-/* ===== Thư viện Album/Playlist - TheAura Style ===== */
+/* ==================== LIBRARY PAGE - ĐẸP & HIỆN ĐẠI ==================== */
+
 .library-section {
-    width: 95%;
-    margin: 42px auto 0 auto;
+    max-width: 1400px;
+    margin: 100px auto 80px;
+    padding: 0 30px;
 }
-.library-section h2 {
-    font-size: 24px;
-    color: #c9b6ff;
-    margin-bottom: 18px;
-    letter-spacing: 1px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    line-height: 1.12;
-}
-.library-section h2 i {
+
+.section-title {
+    font-size: 34px;
     color: #a770ff;
-    font-size: 1.2em;
-    filter: drop-shadow(0 2px 16px #8a2be2aa);
-}
-.library-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
-    gap: 25px;
-}
-.library-card {
-    background: rgba(35,35,70,0.62);
-    border: 1.5px solid rgba(138,43,226,0.22);
-    border-radius: 19px;
-    padding: 15px 14px 19px 14px;
-    transition: 0.33s cubic-bezier(.23,.62,.28,.99);
-    cursor: pointer;
+    font-weight: 700;
     text-align: center;
-    position: relative;
-    min-height: 240px;
-    box-shadow: 0 8px 38px rgba(138,43,226,0.07);
-    overflow: visible;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.library-card:hover {
-    transform: translateY(-8px) scale(1.025);
-    box-shadow: 0 0 32px 10px #8a2be230;
-    border: 2px solid #8a2be2bb;
-    z-index: 2;
-}
-.library-card img {
-    width:105px;
-    height:105px;
-    border-radius:14px;
-    margin-bottom:13px;
-    object-fit: cover;
-    box-shadow: 0 2px 20px rgba(138,43,226,0.16);
-}
-.library-card-title {
-    font-size:17px;
-    font-weight:700;
-    color: #e0e7ff;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.library-card-sub {
-    font-size:14px;
-    opacity:0.83;
-    color: #cac6ee;
-    margin-top:2px;
-    margin-bottom:4px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-/* Nút phát nhanh */
-.library-quick-play-btn {
-    position: absolute;
-    right: 19px;
-    top: 19px;
-    background: linear-gradient(135deg, #a57bff 60%, #4169e1 100%);
-    box-shadow: 0 2px 10px #8a2be288;
-    color: #fff;
-    border: none;
-    width:38px;
-    height:38px;
-    border-radius: 19px;
-    font-size:1.1em;
+    margin-bottom: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 15px;
+}
+
+.section-title i {
+    font-size: 38px;
+}
+
+/* Grid card */
+.library-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 30px;
+}
+
+.library-card {
+    background: linear-gradient(145deg, #1e1e2f, #181824);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s ease;
+    position: relative;
+    cursor: pointer;
+}
+
+.library-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 20px 40px rgba(138, 43, 226, 0.3);
+}
+
+.library-thumb {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.library-card:hover .library-thumb {
+    transform: scale(1.05);
+}
+
+.library-info {
+    padding: 20px;
+}
+
+.library-title {
+    font-size: 20px;
+    color: white;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.library-sub {
+    font-size: 15px;
+    color: #b0b8d0;
+    margin: 0;
+}
+
+/* Nút play/shuffle */
+.quick-play-btn {
+    position: absolute;
+    bottom: 90px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #8a2be2, #4169e1);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(138, 43, 226, 0.4);
+    transition: all 0.4s ease;
     opacity: 0;
-    transition: .26s cubic-bezier(.23,1.52,.28,1);
-    z-index: 4;
+    transform: scale(0.8);
 }
-.library-card:hover .library-quick-play-btn { opacity: 1;}
+
+.library-card:hover .quick-play-btn {
+    opacity: 1;
+    transform: scale(1);
+    bottom: 100px;
+}
+
+.quick-play-btn:hover {
+    background: linear-gradient(135deg, #a770ff, #6495ed);
+    transform: scale(1.1);
+}
+
+/* Overlay link toàn card */
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Trạng thái trống */
+.empty-state {
+    text-align: center;
+    padding: 100px 20px;
+    color: #aaa;
+}
+
+.empty-icon {
+    font-size: 80px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.empty-state p {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.sub-text {
+    font-size: 16px;
+    color: #888;
+    margin-bottom: 30px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #8a2be2, #4169e1);
+    color: white;
+    padding: 14px 32px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(138, 43, 226, 0.3);
+}
+
 /* Responsive */
-@media (max-width: 800px) {
-    .library-section { width: 99%; padding: 0; }
-    .library-grid { gap: 15px; }
-    .library-card img { width:70px; height:70px; }
+@media (max-width: 992px) {
+    .library-section {
+        margin-top: 100px;
+        padding: 0 20px;
+    }
+    .section-title {
+        font-size: 30px;
+    }
+    .library-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 25px;
+    }
+    .library-thumb {
+        height: 200px;
+    }
 }
-@media (max-width: 600px) {
-    .library-section h2 { font-size: 16.9px; gap:7px; }
-    .library-grid { grid-template-columns: 1fr 1fr; gap: 12.5px;}
-}
-@media (max-width: 400px){
-    .library-grid { grid-template-columns: 1fr; }
+
+@media (max-width: 576px) {
+    .library-grid {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+    .library-thumb {
+        height: 160px;
+    }
+    .quick-play-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        bottom: 80px;
+        right: 15px;
+    }
+    .library-card:hover .quick-play-btn {
+        bottom: 90px;
+    }
 }
 /* ===== Khám phá (Explore) - TheAura Music ===== */
 .explore-section {
@@ -934,4 +1020,620 @@ nav a:hover::after {
 }
 @media (max-width: 400px){
     .explore-grid { grid-template-columns: 1fr; }
+}
+/* ==================== PROFILE PAGE - GIAO DIỆN ĐẸP HOÀN HẢO ==================== */
+
+.profile-page-container {
+    max-width: 650px;
+    margin: 140px auto 80px;
+    padding: 0 20px;
+}
+
+.profile-card {
+    background: linear-gradient(145deg, #1e1e2f, #181824);
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 25px 70px rgba(138, 43, 226, 0.25);
+    border: 1px solid rgba(138, 43, 226, 0.18);
+}
+
+.profile-header-section {
+    background: linear-gradient(135deg, #8a2be2, #4169e1);
+    padding: 60px 40px;
+    text-align: center;
+    color: white;
+}
+
+.profile-avatar-icon {
+    font-size: 90px;
+    margin-bottom: 20px;
+    opacity: 0.95;
+}
+
+.profile-header-section h2 {
+    font-size: 34px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    letter-spacing: 0.5px;
+}
+
+.greeting-text {
+    font-size: 21px;
+    margin: 0;
+    opacity: 0.95;
+}
+
+.profile-body-section {
+    padding: 55px 50px;
+}
+
+.section-title-center {
+    text-align: center;
+    color: #a770ff;
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 40px;
+}
+
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    color: #e0e7ff;
+    font-weight: 600;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.profile-input {
+    background: rgba(30, 30, 70, 0.8) !important;
+    border: none !important;
+    color: white !important;
+    padding: 18px 20px !important;
+    border-radius: 16px !important;
+    font-size: 17px;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.profile-input:focus {
+    background: rgba(40, 40, 90, 0.9) !important;
+    box-shadow: 0 0 0 4px rgba(138, 43, 226, 0.5) !important;
+}
+
+/* Nút căn giữa */
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.btn-update {
+    background: linear-gradient(135deg, #8a2be2, #4169e1);
+    color: white;
+    border: none;
+    padding: 18px 60px;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 12px 35px rgba(138, 43, 226, 0.35);
+}
+
+.btn-update:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 40px rgba(138, 43, 226, 0.45);
+}
+
+.logout-btn {
+    margin-top: 30px;
+}
+
+.btn-logout-profile {
+    background: transparent;
+    color: #ff6b6b;
+    border: 2.5px solid #ff6b6b;
+    padding: 16px 50px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.4s ease;
+}
+
+.btn-logout-profile:hover {
+    background: #ff6b6b;
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(255, 107, 107, 0.3);
+}
+
+/* Alert boxes */
+.alert-box {
+    padding: 18px;
+    border-radius: 16px;
+    font-size: 17px;
+    text-align: center;
+    margin-bottom: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.alert-box.success {
+    background: rgba(29, 185, 84, 0.2);
+    border: 1px solid #1db954;
+    color: #1db954;
+}
+
+.alert-box.error {
+    background: rgba(255, 107, 107, 0.2);
+    border: 1px solid #ff6b6b;
+    color: #ff6b6b;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-page-container {
+        margin: 110px auto 50px;
+        padding: 0 15px;
+    }
+    .profile-header-section {
+        padding: 50px 25px;
+    }
+    .profile-avatar-icon {
+        font-size: 70px;
+    }
+    .profile-header-section h2 {
+        font-size: 30px;
+    }
+    .greeting-text {
+        font-size: 19px;
+    }
+    .profile-body-section {
+        padding: 45px 30px;
+    }
+    .section-title-center {
+        font-size: 24px;
+    }
+    .btn-update, .btn-logout-profile {
+        padding: 16px 45px;
+        font-size: 18px;
+    }
+}
+/* ==================== ADMIN DASHBOARD - FULL CSS ==================== */
+
+.admin-dashboard-container {
+    max-width: 1400px;
+    margin: 120px auto 80px;
+    padding: 0 30px;
+}
+
+.admin-section-title {
+    font-size: 36px;
+    color: #a770ff;
+    text-align: center;
+    margin-bottom: 50px;
+    font-weight: 700;
+}
+
+.admin-welcome {
+    text-align: center;
+    margin-bottom: 50px;
+    padding: 30px;
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(65, 105, 225, 0.1));
+    border-radius: 20px;
+}
+
+.admin-welcome h2 {
+    font-size: 36px;
+    color: #a770ff;
+    margin: 0 0 12px 0;
+}
+
+.admin-welcome p {
+    font-size: 18px;
+    color: #b0b8d0;
+}
+
+/* Grid thống kê */
+.admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 60px;
+}
+
+.stat-card {
+    background: linear-gradient(145deg, #1e1e2f, #181824);
+    border-radius: 24px;
+    padding: 35px 30px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s ease;
+    border: 1px solid rgba(138, 43, 226, 0.15);
+}
+
+.stat-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 25px 50px rgba(138, 43, 226, 0.35);
+}
+
+.stat-card.large {
+    grid-column: span 2;
+}
+
+.stat-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    margin-right: 25px;
+    flex-shrink: 0;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.stat-icon.purple { background: linear-gradient(135deg, #8a2be2, #a770ff); }
+.stat-icon.blue { background: linear-gradient(135deg, #4169e1, #6495ed); }
+.stat-icon.green { background: linear-gradient(135deg, #1db954, #1ed760); }
+.stat-icon.orange { background: linear-gradient(135deg, #ff8c00, #ffa500); }
+.stat-icon.pink { background: linear-gradient(135deg, #ff6b9d, #c44569); }
+.stat-icon.cyan { background: linear-gradient(135deg, #17a2b8, #20c997); }
+
+.stat-content h3 {
+    font-size: 40px;
+    margin: 0 0 8px 0;
+    color: white;
+    font-weight: 700;
+}
+
+.stat-content p {
+    margin: 0;
+    font-size: 16px;
+    color: #b0b8d0;
+    font-weight: 500;
+}
+
+.stat-content small {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #8a8aff;
+}
+
+.trend-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0 0;
+    font-size: 16px;
+}
+
+.trend-list li {
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(138, 43, 226, 0.2);
+    color: #e0e7ff;
+}
+
+.trend-list li:last-child {
+    border-bottom: none;
+}
+
+/* Nút hành động nhanh */
+.quick-actions {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 50px;
+}
+
+.quick-btn {
+    background: linear-gradient(135deg, #1e1e2f, #181824);
+    color: white;
+    padding: 22px 40px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.4s ease;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(138, 43, 226, 0.2);
+}
+
+.quick-btn:hover {
+    background: linear-gradient(135deg, #8a2be2, #4169e1);
+    transform: translateY(-6px);
+    box-shadow: 0 18px 40px rgba(138, 43, 226, 0.4);
+}
+
+/* Bảng quản lý */
+.table-container {
+    overflow-x: auto;
+    background: linear-gradient(145deg, #1e1e2f, #181824);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th {
+    background: rgba(138, 43, 226, 0.3);
+    color: #a770ff;
+    padding: 18px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.admin-table td {
+    padding: 18px;
+    border-bottom: 1px solid rgba(138, 43, 226, 0.1);
+    color: #e0e7ff;
+}
+
+.table-thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.role-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    color: white;
+}
+
+.role-badge:contains("ADMIN") {
+    background: #ff6b6b;
+}
+
+.role-badge:contains("USER") {
+    background: #1db954;
+}
+
+.btn-action {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin: 0 8px;
+    transition: all 0.3s;
+}
+
+.btn-edit { color: #ffd700; }
+.btn-edit:hover { color: #ffed4e; }
+
+.btn-delete { color: #ff6b6b; }
+.btn-delete:hover { color: #ff8787; }
+
+.chart-placeholder {
+    background: rgba(30, 30, 70, 0.3);
+    border-radius: 20px;
+    padding: 60px;
+    text-align: center;
+    color: #b0b8d0;
+    font-size: 18px;
+    margin-top: 50px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .admin-dashboard-container {
+        margin-top: 100px;
+        padding: 0 20px;
+    }
+    .admin-welcome h2 {
+        font-size: 30px;
+    }
+    .admin-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .stat-card.large {
+        grid-column: span 1;
+    }
+    .quick-actions {
+        gap: 20px;
+    }
+    .quick-btn {
+        padding: 18px 30px;
+        font-size: 17px;
+    }
+}
+/* ==================== RECENT PAGE - LỊCH SỬ NGHE GẦN ĐÂY ==================== */
+
+.recent-container {
+    max-width: 1200px;
+    margin: 120px auto 80px;
+    padding: 0 30px;
+}
+
+.recent-title {
+    font-size: 36px;
+    color: #a770ff;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.recent-title i {
+    font-size: 40px;
+}
+
+/* Grid danh sách */
+.recent-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.recent-card {
+    background: linear-gradient(145deg, #1e1e2f, #181824);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s ease;
+    position: relative;
+    cursor: pointer;
+}
+
+.recent-card:hover {
+    transform: translateX(10px);
+    box-shadow: 0 15px 40px rgba(138, 43, 226, 0.3);
+}
+
+.recent-number {
+    font-size: 28px;
+    font-weight: bold;
+    color: #a770ff;
+    width: 50px;
+    text-align: center;
+    opacity: 0.8;
+}
+
+.recent-thumb {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.recent-info {
+    flex: 1;
+}
+
+.recent-song-title {
+    font-size: 20px;
+    color: white;
+    margin: 0 0 6px 0;
+    font-weight: 600;
+}
+
+.recent-artist {
+    font-size: 16px;
+    color: #b0b8d0;
+    margin: 0 0 4px 0;
+}
+
+.recent-time {
+    font-size: 14px;
+    color: #888;
+    margin: 0;
+}
+
+.recent-play-btn {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #8a2be2, #4169e1);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 22px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 8px 25px rgba(138, 43, 226, 0.4);
+    opacity: 0;
+}
+
+.recent-card:hover .recent-play-btn {
+    opacity: 1;
+}
+
+.recent-play-btn:hover {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, #a770ff, #6495ed);
+}
+
+.recent-link-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Khi chưa có lịch sử */
+.recent-empty {
+    text-align: center;
+    padding: 100px 20px;
+    color: #aaa;
+}
+
+.recent-empty-icon {
+    font-size: 80px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.recent-empty p {
+    font-size: 20px;
+    margin-bottom: 30px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #8a2be2, #4169e1);
+    color: white;
+    padding: 14px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(138, 43, 226, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .recent-container {
+        margin-top: 100px;
+        padding: 0 20px;
+    }
+    .recent-title {
+        font-size: 30px;
+    }
+    .recent-card {
+        gap: 15px;
+        padding: 15px;
+    }
+    .recent-thumb {
+        width: 70px;
+        height: 70px;
+    }
+    .recent-play-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
 }

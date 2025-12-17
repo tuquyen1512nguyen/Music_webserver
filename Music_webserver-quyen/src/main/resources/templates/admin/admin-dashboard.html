@@ -1,0 +1,88 @@
+<!-- src/main/resources/templates/admin/admin-dashboard.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản trị • TheAura Music</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Header chung -->
+<div th:replace="~{header}"></div>
+
+<!-- Nội dung Dashboard Admin -->
+<div class="admin-dashboard-container">
+    <div class="admin-welcome">
+        <h2>Chào mừng Admin <strong th:text="${#authentication.principal.username}">Admin</strong></h2>
+        <p>Quản lý và theo dõi hoạt động của TheAura Music</p>
+    </div>
+
+    <div class="admin-stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon purple"><i class="fa fa-users"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${totalUsers}">1234</h3>
+                <p>Tổng người dùng</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fa fa-music"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${totalSongs}">5678</h3>
+                <p>Tổng bài hát</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fa fa-headphones"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${totalViews}">9,876,543</h3>
+                <p>Tổng lượt nghe</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon cyan"><i class="fa fa-list-alt"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${totalPlaylists}">890</h3>
+                <p>Tổng playlist</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon orange"><i class="fa fa-fire"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${hotSong?.title} ?: 'Chưa có'">Faded</h3>
+                <p>Bài hát hot nhất</p>
+                <small th:if="${hotSong}" th:text="${hotSong.artist} + ' • ' + ${hotSong.viewCount} + ' lượt'">Alan Walker • 999999 lượt</small>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon pink"><i class="fa fa-user-plus"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${newUsersToday}">45</h3>
+                <p>Người dùng mới hôm nay</p>
+            </div>
+        </div>
+        <div class="stat-card large">
+            <div class="stat-icon pink"><i class="fa fa-search"></i></div>
+            <div class="stat-content">
+                <h3>Xu hướng tìm kiếm</h3>
+                <ul class="trend-list">
+                    <li th:each="trend, iter : ${topKeywords}" th:text="${iter.index + 1} + '. ' + ${trend}">1. Alan Walker</li>
+                    <li th:if="${topKeywords == null or topKeywords.isEmpty()}">Chưa có dữ liệu</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <a th:href="@{/admin/users}" class="quick-btn"><i class="fa fa-users"></i> Quản lý người dùng</a>
+        <a th:href="@{/admin/songs}" class="quick-btn"><i class="fa fa-music"></i> Quản lý bài hát</a>
+        <a th:href="@{/admin/statistics}" class="quick-btn"><i class="fa fa-chart-line"></i> Báo cáo chi tiết</a>
+    </div>
+</div>
+
+<div class="wave"></div>
+</body>
+</html>

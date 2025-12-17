@@ -52,7 +52,7 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("token", jwtResponse.getToken());
             redirectAttributes.addFlashAttribute("username", jwtResponse.getUsername());
 
-            return "redirect:/home"; // hoặc /home đã login
+            return "redirect:/login"; // hoặc /home đã login
 
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());

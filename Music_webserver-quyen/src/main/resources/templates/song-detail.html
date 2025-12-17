@@ -4,20 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${song.title} + ' - ' + (${song.artist} ?: 'TheAura Music')">Chi tiết bài hát</title>
+    <!-- Font Awesome - bắt buộc để icon trong header hiển thị đầy đủ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS chính của dự án -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
 <!-- Header (giữ nguyên cơ chế switch) -->
-<th:block th:switch="${#authorization != null && #authorization.authenticated}">
-    <th:block th:case="true">
-        <th:block th:replace="~{layout/header-private :: header}"></th:block>
-    </th:block>
-    <th:block th:case="*">
-        <th:block th:replace="~{layout/header-public :: header}"></th:block>
-    </th:block>
-</th:block>
-
+<div th:replace="~{header}"></div>
 <div class="song-detail-container" style="margin-top:130px; max-width:1600px; padding: 0 24px;">
     <div class="row" style="display: flex; gap: 40px; flex-wrap: wrap;">
         <!-- LEFT: Video + Lyric -->

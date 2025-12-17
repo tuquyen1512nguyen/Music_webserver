@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} ?: 'Quản trị • TheAura Music'">Quản trị • TheAura Music</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS chính -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- CSS riêng cho admin (sẽ thêm dưới) -->
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+</head>
+<body class="admin-body">
+
+<!-- Header giống người dùng -->
+<div th:replace="~{header :: header}"></div>
+
+<!-- Sidebar Admin cố định bên trái -->
+<div class="admin-sidebar">
+    <div class="sidebar-header">
+        <h3><i class="fa fa-shield-alt"></i> Admin Panel</h3>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a th:href="@{/admin}" th:classappend="${activePage == 'dashboard' ? 'active' : ''}">
+            <i class="fa fa-tachometer-alt"></i> Tổng quan
+        </a></li>
+        <li><a th:href="@{/admin/users}" th:classappend="${activePage == 'users' ? 'active' : ''}">
+            <i class="fa fa-users"></i> Người dùng
+        </a></li>
+        <li><a th:href="@{/admin/songs}" th:classappend="${activePage == 'songs' ? 'active' : ''}">
+            <i class="fa fa-music"></i> Bài hát
+        </a></li>
+        <li><a th:href="@{/admin/statistics}" th:classappend="${activePage == 'statistics' ? 'active' : ''}">
+            <i class="fa fa-chart-bar"></i> Thống kê
+        </a></li>
+        <li class="logout-item">
+            <a th:href="@{/logout}"><i class="fa fa-sign-out-alt"></i> Đăng xuất</a>
+        </li>
+    </ul>
+</div>
+
+<!-- Nội dung chính (chèn từ file con) -->
+<div class="admin-main-content">
+    <th:block th:replace="${content}"></th:block>
+</div>
+
+<!-- Hiệu ứng sóng -->
+<div class="wave"></div>
+</body>
+</html>

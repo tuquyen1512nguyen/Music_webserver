@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử nghe • TheAura Music</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS chính -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Header chung -->
+<div th:replace="~{header}"></div>
+
+<!-- Nội dung trang Recent -->
+<div class="recent-container">
+    <h2 class="recent-title"><i class="fa fa-history"></i> Lịch sử nghe gần đây</h2>
+
+    <!-- Danh sách bài hát (dữ liệu giả) -->
+    <div class="recent-grid">
+        <!-- Bài 1 -->
+        <div class="recent-card">
+            <div class="recent-number">1</div>
+            <img src="https://i.imgur.com/2DhmtJ4.jpg" alt="Faded" class="recent-thumb">
+            <div class="recent-info">
+                <h4 class="recent-song-title">Faded</h4>
+                <p class="recent-artist">Alan Walker</p>
+                <p class="recent-time">5 phút trước</p>
+            </div>
+            <button class="recent-play-btn" title="Phát bài hát">
+                <i class="fa fa-play"></i>
+            </button>
+            <a href="/songs/1" class="recent-link-overlay"></a>
+        </div>
+
+        <!-- Bài 2 -->
+        <div class="recent-card">
+            <div class="recent-number">2</div>
+            <img src="https://i.imgur.com/CUe7RkV.jpg" alt="Shape of You" class="recent-thumb">
+            <div class="recent-info">
+                <h4 class="recent-song-title">Shape of You</h4>
+                <p class="recent-artist">Ed Sheeran</p>
+                <p class="recent-time">30 phút trước</p>
+            </div>
+            <button class="recent-play-btn" title="Phát bài hát">
+                <i class="fa fa-play"></i>
+            </button>
+            <a href="/songs/2" class="recent-link-overlay"></a>
+        </div>
+
+        <!-- Bài 3 -->
+        <div class="recent-card">
+            <div class="recent-number">3</div>
+            <img src="https://i.imgur.com/3ZQ3ZQh.jpg" alt="On My Way" class="recent-thumb">
+            <div class="recent-info">
+                <h4 class="recent-song-title">On My Way</h4>
+                <p class="recent-artist">Alan Walker</p>
+                <p class="recent-time">2 giờ trước</p>
+            </div>
+            <button class="recent-play-btn" title="Phát bài hát">
+                <i class="fa fa-play"></i>
+            </button>
+            <a href="/songs/3" class="recent-link-overlay"></a>
+        </div>
+
+        <!-- Bài 4 -->
+        <div class="recent-card">
+            <div class="recent-number">4</div>
+            <img src="https://i.imgur.com/kQKQ1AN.jpeg" alt="Alone" class="recent-thumb">
+            <div class="recent-info">
+                <h4 class="recent-song-title">Alone</h4>
+                <p class="recent-artist">Marshmello</p>
+                <p class="recent-time">Hôm qua</p>
+            </div>
+            <button class="recent-play-btn" title="Phát bài hát">
+                <i class="fa fa-play"></i>
+            </button>
+            <a href="/songs/4" class="recent-link-overlay"></a>
+        </div>
+
+        <!-- Bài 5 -->
+        <div class="recent-card">
+            <div class="recent-number">5</div>
+            <img src="https://i.imgur.com/MTd8NHo.jpeg" alt="Lily" class="recent-thumb">
+            <div class="recent-info">
+                <h4 class="recent-song-title">Lily</h4>
+                <p class="recent-artist">Alan Walker</p>
+                <p class="recent-time">3 ngày trước</p>
+            </div>
+            <button class="recent-play-btn" title="Phát bài hát">
+                <i class="fa fa-play"></i>
+            </button>
+            <a href="/songs/5" class="recent-link-overlay"></a>
+        </div>
+    </div>
+</div>
+
+<div class="wave"></div>
+</body>
+</html>

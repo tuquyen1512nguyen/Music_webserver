@@ -12,4 +12,7 @@ public class SongDTO {
     private String thumbnail;       // <-- BẮT BUỘC PHẢI CÓ DÒNG NÀY
     private int viewCount;
     private boolean isFavorite = false;
+
+    public void setLastPlayed(String time) {
+    }
 }
