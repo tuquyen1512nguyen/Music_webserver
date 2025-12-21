@@ -3,12 +3,15 @@ package com.music.search.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.music.search.dto.SongDTO;
 import com.music.search.entity.Song;
+import com.music.search.entity.User;
 import com.music.search.repository.SongRepository;
+import com.music.search.repository.UserRepository;
 import com.music.search.service.LrcLibService;
 import com.music.search.service.SongService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,31 +28,29 @@ import java.util.stream.Collectors;
 public class SongServiceImpl implements SongService {
 
     private final SongRepository songRepository;
-    private final LrcLibService lrcLibService;           // Genius API mới
+    private final UserRepository userRepository;
+    private final LrcLibService lrcLibService;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${youtube.api.key}")
+    @Value("${youtube.api.key:}")
     private String youtubeKey;
 
+    // ===================== TÌM KIẾM BÀI HÁT =====================
     @Override
     public List<SongDTO> searchSongs(String keyword) {
-        List<Song> songs = new ArrayList<>();
-
-        // Nếu keyword dài (> 10 ký tự) → ưu tiên tìm theo lời bài hát (người dùng nhớ lời)
-        if (keyword.length() > 10) {
-            songs = songRepository.searchByLyric(keyword);
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return new ArrayList<>();
         }
 
-        // Nếu không tìm thấy hoặc keyword ngắn → tìm theo tên/ca sĩ như cũ
-        if (songs.isEmpty()) {
-            songs = songRepository.searchByTitleOrArtist(keyword);
-        }
+        keyword = keyword.trim();
 
-        // Kết hợp cả 2 để kết quả phong phú hơn (tránh bỏ sót)
+        List<Song> byLyric = new ArrayList<>();
         List<Song> byTitleArtist = songRepository.searchByTitleOrArtist(keyword);
-        List<Song> byLyric = songRepository.searchByLyric(keyword);
 
-        // Gộp + loại trùng + sắp xếp theo độ liên quan (lyric trước)
+        if (keyword.length() > 10) {
+            byLyric = songRepository.searchByLyric(keyword);
+        }
+
         Set<Song> combined = new LinkedHashSet<>(byLyric);
         combined.addAll(byTitleArtist);
 
@@ -58,55 +59,87 @@ public class SongServiceImpl implements SongService {
                 .collect(Collectors.toList());
     }
 
+    // ===================== LẤY BÀI HÁT THEO ID =====================
     @Override
     public SongDTO getSongById(Long id) {
         Song song = songRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Bài hát không tồn tại"));
 
-        // Tăng lượt xem
         song.setViewCount(song.getViewCount() + 1);
-
-        // Lấy video + lời (nếu chưa có)
         enrichSong(song);
         songRepository.save(song);
 
         return mapToDTO(song);
     }
+
+    // ===================== TOP BÀI HÁT THEO LƯỢT XEM =====================
     @Override
     public List<SongDTO> getTopSongsByViewCount(int limit) {
-        return songRepository.findTopByOrderByViewCountDesc(PageRequest.of(0, limit))
+        return songRepository.findAll(PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "viewCount")))
+                .getContent()
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
+    // ===================== GỢI Ý DỰA TRÊN SỞ THÍCH NGƯỜI DÙNG =====================
+    @Override
+    public List<SongDTO> getRecommendedSongsByPreference(Long userId, int limit) {
+        User user = userRepository.findById(userId).orElse(null);
 
-    /**
-     * Bổ sung YouTube URL, thumbnail và lời bài hát (Genius) nếu chưa có
-     */
+        // Nếu không tìm thấy user hoặc chưa có sở thích → gợi ý top hot nhất
+        if (user == null ||
+                (user.getFavoriteArtists() == null || user.getFavoriteArtists().trim().isEmpty()) &&
+                        (user.getFavoriteGenres() == null || user.getFavoriteGenres().trim().isEmpty())) {
+
+            return getTopSongsByViewCount(limit);
+        }
+
+        List<Song> recommended = new ArrayList<>();
+
+        // Ưu tiên nghệ sĩ yêu thích
+        if (user.getFavoriteArtists() != null && !user.getFavoriteArtists().trim().isEmpty()) {
+            String[] artists = user.getFavoriteArtists().split(",");
+            for (String artist : artists) {
+                artist = artist.trim();
+                if (!artist.isEmpty()) {
+                    recommended.addAll(songRepository.findByArtistContainingIgnoreCase(artist));
+                }
+            }
+        }
+
+        // (Tương lai: thêm theo thể loại nếu Song có field genre)
+        // if (user.getFavoriteGenres() != null && !user.getFavoriteGenres().trim().isEmpty()) { ... }
+
+        // Loại trùng, giới hạn, enrich dữ liệu
+        return recommended.stream()
+                .distinct()
+                .limit(limit)
+                .map(this::enrichSong)
+                .collect(Collectors.toList());
+    }
+
+    // ===================== BỔ SUNG DỮ LIỆU (YouTube + Lời) =====================
     private SongDTO enrichSong(Song song) {
         boolean updated = false;
 
-        // 1. YouTube video + thumbnail
-        if (song.getYoutubeUrl() == null || song.getYoutubeUrl().isEmpty()) {
+        if ((song.getYoutubeUrl() == null || song.getYoutubeUrl().isEmpty()) && youtubeKey != null && !youtubeKey.isBlank()) {
             String videoId = fetchYoutubeVideoId(song.getTitle(), song.getArtist());
             if (videoId != null) {
-                song.setYoutubeUrl("https://www.youtube.com/embed/" + videoId + "?autoplay=1&rel=0&modestbranding=1");
-                song.setThumbnail("https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg");
+                song.setYoutubeUrl("https://www.youtube.com/embed/" + videoId + "?autoplay=1&rel=0");
+                song.setThumbnail("https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg");
                 updated = true;
             }
         }
 
-        // 2. Lời bài hát từ Genius API (chỉ lấy khi chưa có hoặc rỗng)
-        if (song.getLyric() == null || song.getLyric().trim().isEmpty() || song.getLyric().contains("Không tìm thấy lời")) {
+        if (song.getLyric() == null || song.getLyric().trim().isEmpty() || song.getLyric().contains("Không tìm thấy")) {
             String lyrics = lrcLibService.fetchLyrics(song.getTitle(), song.getArtist());
-            if (lyrics != null && lyrics.trim().length() > 50) {  // Genius trả lời chất lượng cao
-                song.setLyric(lyrics.trim() + "\n\n(Nguồn: Genius.com)");
+            if (lyrics != null && lyrics.trim().length() > 50) {
+                song.setLyric(lyrics.trim());
                 updated = true;
             }
         }
 
-        // Lưu lại nếu có thay đổi
         if (updated) {
             songRepository.save(song);
         }
@@ -114,15 +147,13 @@ public class SongServiceImpl implements SongService {
         return mapToDTO(song);
     }
 
-    /**
-     * Tìm video YouTube chính xác nhất
-     */
+    // ===================== TÌM VIDEO YOUTUBE =====================
     private String fetchYoutubeVideoId(String title, String artist) {
         if (youtubeKey == null || youtubeKey.isBlank()) return null;
 
         String[] queries = {
                 title + " " + artist + " official music video",
-                title + " " + artist + " official",
+                title + " " + artist + " official audio",
                 title + " " + artist,
                 title
         };
@@ -130,13 +161,14 @@ public class SongServiceImpl implements SongService {
         for (String q : queries) {
             try {
                 String encoded = URLEncoder.encode(q, StandardCharsets.UTF_8);
-                String url = "https://www.googleapis.com/youtube/v3/search" +
-                        "?part=snippet&type=video&maxResults=1&q=" + encoded +
-                        "&key=" + youtubeKey;
+                String url = "https://www.googleapis.com/youtube/v3/search"
+                        + "?part=snippet&type=video&maxResults=3&q=" + encoded
+                        + "&key=" + youtubeKey;
 
                 JsonNode response = restTemplate.getForObject(url, JsonNode.class);
-                JsonNode items = response.path("items");
+                if (response == null) continue;
 
+                JsonNode items = response.path("items");
                 if (items.isArray() && items.size() > 0) {
                     String videoId = items.get(0).path("id").path("videoId").asText();
                     if (videoId != null && !videoId.isBlank()) {
@@ -144,15 +176,13 @@ public class SongServiceImpl implements SongService {
                     }
                 }
             } catch (Exception ignored) {
-                // Thử query tiếp theo
+                // Tiếp tục query khác
             }
         }
         return null;
     }
 
-    /**
-     * Chuyển Entity → DTO
-     */
+    // ===================== MAP ENTITY → DTO =====================
     private SongDTO mapToDTO(Song song) {
         SongDTO dto = new SongDTO();
         dto.setId(song.getId());

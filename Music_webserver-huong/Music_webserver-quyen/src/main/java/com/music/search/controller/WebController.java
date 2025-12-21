@@ -16,10 +16,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 @Controller
@@ -33,13 +32,34 @@ public class WebController {
     private final FavoriteService favoriteService;
     private final PasswordEncoder passwordEncoder;
 
-    // === TRANG NGƯỜI DÙNG ===
+    // ==================== TRANG CHỦ ====================
+    @GetMapping({"/", "/index"})
+    public String index(Authentication auth, Model model) {
+        // Trending chung cho mọi người
+        List<SongDTO> featuredSongs = songService.getTopSongsByViewCount(12);
+        model.addAttribute("featuredSongs", featuredSongs);
 
+        // Gợi ý cá nhân hóa nếu đã login
+        if (auth != null && auth.isAuthenticated()) {
+            User user = userRepository.findByUsername(auth.getName()).orElse(null);
+            if (user != null) {
+                List<SongDTO> recommended = songService.getRecommendedSongsByPreference(user.getId(), 12);
+                model.addAttribute("recommendedSongs", recommended);
+            }
+        }
+
+        return "index";
+    }
+
+    // ==================== TRANG KHÁM PHÁ ====================
     @GetMapping("/explore")
-    public String explore() {
+    public String explore(Model model) {
+        List<SongDTO> trendingSongs = songService.getTopSongsByViewCount(12);
+        model.addAttribute("trendingSongs", trendingSongs);
         return "explore";
     }
 
+    // ==================== CHI TIẾT BÀI HÁT ====================
     @GetMapping("/songs/{id}")
     public String detail(@PathVariable Long id, Model model, Authentication auth) {
         SongDTO song = songService.getSongById(id);
@@ -58,6 +78,8 @@ public class WebController {
             }
         }
         model.addAttribute("isFavorite", isFavorite);
+
+        // Gợi ý bài hát tương tự
         List<SongDTO> suggestedSongs = songService.getTopSongsByViewCount(10)
                 .stream()
                 .filter(s -> !s.getId().equals(id))
@@ -69,6 +91,7 @@ public class WebController {
         return "song-detail";
     }
 
+    // ==================== TÌM KIẾM ====================
     @GetMapping("/search")
     public String search(@RequestParam(required = false) String keyword,
                          Authentication auth, Model model) {
@@ -93,6 +116,7 @@ public class WebController {
         return "search-results";
     }
 
+    // ==================== THƯ VIỆN ====================
     @GetMapping("/library")
     public String library(Model model, Authentication auth) {
         if (auth == null || !auth.isAuthenticated()) {
@@ -108,19 +132,20 @@ public class WebController {
 
         return "library";
     }
-    @GetMapping({"/", "/index"})
-    public String index(Model model) {
-        // Lấy top 12 bài hát có lượt nghe cao nhất từ DB
-        List<SongDTO> featuredSongs = songService.getTopSongsByViewCount(12);
-        model.addAttribute("featuredSongs", featuredSongs);
-        return "index";
-    }
 
+    // ==================== HỒ SƠ ====================
     @GetMapping("/profile")
-    public String profile() {
+    public String profile(Authentication auth, Model model) {
+        if (auth != null && auth.isAuthenticated()) {
+            User user = userRepository.findByUsername(auth.getName()).orElse(null);
+            if (user != null) {
+                model.addAttribute("currentUser", user);
+            }
+        }
         return "profile";
     }
 
+    // Đổi mật khẩu
     @PostMapping("/profile/change-password")
     public String changePassword(
             @RequestParam String currentPassword,
@@ -156,28 +181,59 @@ public class WebController {
         userRepository.save(user);
 
         redirectAttributes.addFlashAttribute("successMessage", "Thay đổi mật khẩu thành công!");
-
         return "redirect:/profile";
     }
 
-    // === PHẦN ADMIN (DỮ LIỆU GIẢ ĐỂ TEST GIAO DIỆN) ===
+    // ==================== CẬP NHẬT SỞ THÍCH ÂM NHẠC ====================
+    @PostMapping("/profile/update-preferences")
+    public String updatePreferences(
+            @RequestParam(required = false) List<String> favoriteGenres,
+            @RequestParam(required = false) String favoriteArtists,
+            Authentication auth,
+            RedirectAttributes redirectAttributes) {
 
+        User user = userRepository.findByUsername(auth.getName()).orElse(null);
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy người dùng!");
+            return "redirect:/profile";
+        }
 
+        // Cập nhật thể loại
+        if (favoriteGenres != null && !favoriteGenres.isEmpty()) {
+            StringJoiner joiner = new StringJoiner(",");
+            for (String genre : favoriteGenres) {
+                joiner.add(genre.trim());
+            }
+            user.setFavoriteGenres(joiner.toString());
+        } else {
+            user.setFavoriteGenres(null);
+        }
+
+        // Cập nhật nghệ sĩ
+        user.setFavoriteArtists(favoriteArtists != null ? favoriteArtists.trim() : null);
+
+        userRepository.save(user);
+
+        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật sở thích thành công! Gợi ý nhạc sẽ được cải thiện.");
+        return "redirect:/profile";
+    }
+
+    // ==================== GẦN ĐÂY NGHE ====================
     @GetMapping("/recent")
     public String recent(Model model, Authentication auth) {
         if (auth == null || !auth.isAuthenticated()) {
-            return "recent"; // sẽ hiện thông báo đăng nhập
+            return "recent";
         }
 
         User user = userRepository.findByUsername(auth.getName()).orElse(null);
-        if (user == null) return "recent";
+        if (user == null) {
+            return "recent";
+        }
 
-        // Lấy top 20 bài hát gần nhất user nghe (giả sử có entity ListenHistory hoặc từ view log)
-        // Tạm thời: lấy top bài hát có viewCount cao + giả lập thời gian
-        List<SongDTO> recentSongs = songService.getTopSongsByViewCount(20);
+        // Tạm thời dùng top hot (sau này thay bằng lịch sử thật)
+//        List<SongDTO> recentSongs = songService.getTopSongsByViewCount(20);
+//        model.addAttribute("recentSongs", recentSongs);
 
-        model.addAttribute("recentSongs", recentSongs);
         return "recent";
     }
-
 }

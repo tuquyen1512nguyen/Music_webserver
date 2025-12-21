@@ -8,5 +8,5 @@ public interface SongService {
     List<SongDTO> searchSongs(String keyword);
     SongDTO getSongById(Long id);
     List<SongDTO> getTopSongsByViewCount(int limit);
-
+    List<SongDTO> getRecommendedSongsByPreference(Long userId, int limit);
 }

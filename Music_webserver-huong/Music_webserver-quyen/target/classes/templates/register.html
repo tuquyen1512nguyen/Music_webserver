@@ -1,4 +1,3 @@
-<!-- src/main/resources/templates/register.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -6,29 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký • TheAura Music</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
 <div class="wave"></div>
+
 <div class="register-container">
     <div class="register-box">
         <h1>TheAura</h1>
         <h2>Tạo tài khoản mới</h2>
 
-        <!-- Thông báo lỗi -->
-        <div th:if="${error}" style="color:#ff6b6b;background:#ffe0e0;padding:12px;border-radius:8px;margin-bottom:15px;text-align:center;">
-            <span th:text="${error}"></span>
+        <!-- Thông báo lỗi chung -->
+        <div th:if="${error}" class="alert alert-danger text-center mb-4">
+            <i class="fa fa-exclamation-triangle"></i>
+            <span th:text="${error}">Lỗi</span>
         </div>
 
-        <!-- Form dùng đúng RegisterRequest -->
+        <!-- Form đăng ký -->
         <form th:action="@{/register}" th:object="${registerRequest}" method="post">
             <div class="input-group">
                 <input type="text" th:field="*{username}" placeholder="Tên đăng nhập" required>
-                <span th:errors="*{username}" style="color:#ff6b6b;font-size:13px;"></span>
+                <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error-text"></span>
             </div>
 
             <div class="input-group">
-                <input type="text" th:field="*{fullName}" placeholder="Tên của bạn" required>
+                <input type="text" th:field="*{fullName}" placeholder="Họ và tên">
             </div>
 
             <div class="input-group">
@@ -37,15 +39,40 @@
 
             <div class="input-group">
                 <input type="password" th:field="*{password}" placeholder="Mật khẩu" required>
-                <span th:errors="*{password}" style="color:#ff6b6b;font-size:13px;"></span>
+                <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-text"></span>
             </div>
 
-            <!-- repassword không có trong DTO → thêm hidden hoặc xử lý riêng -->
             <div class="input-group">
-                <input type="password" name="repassword" placeholder="Nhập lại mật khẩu" required>
+                <input type="password" th:field="*{repassword}" placeholder="Nhập lại mật khẩu" required>
             </div>
 
-            <button type="submit">Đăng ký ngay</button>
+            <!-- ==================== KHẢO SÁT SỞ THÍCH ==================== -->
+            <div class="survey-section">
+                <h3 class="survey-title">Giúp chúng tôi hiểu bạn hơn để gợi ý nhạc hay nhé! 🎵</h3>
+
+                <div class="mb-3">
+                    <label class="form-label">Thể loại nhạc yêu thích (chọn nhiều)</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" th:field="*{favoriteGenres}" value="Pop"> Pop</label>
+                        <label><input type="checkbox" th:field="*{favoriteGenres}" value="Rock"> Rock</label>
+                        <label><input type="checkbox" th:field="*{favoriteGenres}" value="EDM"> EDM</label>
+                        <label><input type="checkbox" th:field="*{favoriteGenres}" value="Ballad"> Ballad</label>
+                        <label><input type="checkbox" th:field="*{favoriteGenres}" value="Rap/Hip-hop"> Rap/Hip-hop</label>
+                        <label><input type="checkbox" th:field="*{favoriteGenres}" value="V-Pop"> V-Pop</label>
+                        <label><input type="checkbox" th:field="*{favoriteGenres}" value="Indie"> Indie</label>
+                        <label><input type="checkbox" th:field="*{favoriteGenres}" value="K-Pop"> K-Pop</label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Nghệ sĩ yêu thích</label>
+                    <input type="text" th:field="*{favoriteArtists}"
+                           class="form-control"
+                           placeholder="VD: Alan Walker, Sơn Tùng M-TP, Taylor Swift">
+                </div>
+            </div>
+
+            <button type="submit" class="register-btn">Đăng ký ngay</button>
         </form>
 
         <p class="footer-text">
@@ -53,13 +80,6 @@
         </p>
     </div>
 </div>
-
-<!-- JS tự động lưu token nếu có (khi redirect từ flash attribute) -->
-<script th:if="${token}">
-    localStorage.setItem("token", [[${token}]]);
-    localStorage.setItem("username", "[[${username}]]");
-    window.location.href = "/home";
-</script>
 
 </body>
 </html>

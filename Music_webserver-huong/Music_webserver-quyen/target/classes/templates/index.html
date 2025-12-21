@@ -38,6 +38,12 @@
                         ▶
                     </a>
                 </div>
+                <!-- NÚT YÊU THÍCH TRÊN THUMBNAIL – DÙNG CSS CÓ SẴN TRONG style.css -->
+                <button class="favorite-btn-search"
+                        th:onclick="'toggleFavoriteFromSearch(' + ${song.id} + ', this)'"
+                        title="Yêu thích">
+                    <i class="fa-heart far" style="font-size: 1.8rem; color: white; text-shadow: 0 0 10px black;"></i>
+                </button>
             </div>
             <div class="p-3 text-center">
                 <h5 class="song-title mb-1" th:text="${song.title}">Tên bài hát</h5>
@@ -53,6 +59,39 @@
     <h3 class="text-muted">Chưa có bài hát nổi bật</h3>
     <p class="text-muted">Hãy thêm bài hát vào hệ thống để hiển thị ở đây!</p>
 </div>
+<!-- JavaScript toggle yêu thích từ trang tìm kiếm -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function toggleFavoriteFromSearch(songId, button) {
+        const icon = button.querySelector('i');
+
+        fetch('/favorite/toggle?songId=' + songId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .then(response => response.text())
+            .then(result => {
+                if (result === "ADDED") {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    alert("❤️ Đã thêm vào yêu thích!");
+                } else if (result === "REMOVED") {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    alert("💔 Đã bỏ yêu thích");
+                } else {
+                    alert("Có lỗi xảy ra, vui lòng thử lại!");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Lỗi kết nối mạng!");
+            });
+    }
+    /*]]>*/
+</script>
 
 </body>
 </html>

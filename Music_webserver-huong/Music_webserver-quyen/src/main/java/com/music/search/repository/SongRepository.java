@@ -41,4 +41,5 @@ public interface SongRepository extends JpaRepository<Song, Long> {
         List<Song> topList = findTopByOrderByViewCountDesc(topOne);
         return topList.isEmpty() ? Optional.empty() : Optional.of(topList.get(0));
     }
+    List<Song> findByArtistContainingIgnoreCase(String artist);
 }

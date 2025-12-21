@@ -34,6 +34,13 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // ==================== SỞ THÍCH NGƯỜI DÙNG - CHO GỢI Ý BÀI HÁT ====================
+    @Column(name = "favorite_genres", length = 500)
+    private String favoriteGenres; // Ví dụ: "Pop,Rock,EDM,Ballad,V-Pop"
+
+    @Column(name = "favorite_artists", length = 1000)
+    private String favoriteArtists; // Ví dụ: "Alan Walker,Ed Sheeran,Sơn Tùng M-TP"
+
     public enum Role {
         USER, ADMIN
     }
