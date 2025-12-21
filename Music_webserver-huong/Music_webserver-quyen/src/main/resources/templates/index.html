@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheAura Music</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<!-- Header chung -->
+<div th:replace="~{header}"></div>
+
+<!-- Banner -->
+<section class="banner">
+    <h1>Khám phá âm nhạc mọi lúc</h1>
+    <p>Nghe nhạc miễn phí – Không cần đăng nhập!</p>
+</section>
+
+<!-- Tiêu đề section bài hát nổi bật -->
+<h3 class="section-title text-center my-5">
+    <i class="fa fa-fire text-danger me-3"></i>
+    <span sec:authorize="isAuthenticated()">Gợi ý hot cho bạn</span>
+    <span sec:authorize="isAnonymous()">Bài hát nổi bật</span>
+</h3>
+
+<!-- Grid bài hát nổi bật ĐỘNG từ DB (top viewCount cao nhất) -->
+<div class="song-grid">
+    <div th:each="song : ${featuredSongs}" class="song-item">
+        <div class="song-card">
+            <div class="position-relative overflow-hidden rounded-3">
+                <img th:src="${song.thumbnail} ?: 'https://via.placeholder.com/400x400/e9ecef/6c757d?text=No+Image'"
+                     class="img-fluid w-100" style=" width: 100%;height: 150px; object-fit: contain; background-color: #111;">
+                <div class="play-overlay">
+                    <a th:href="@{'/songs/' + ${song.id}}" class="play-button">
+                        ▶
+                    </a>
+                </div>
+            </div>
+            <div class="p-3 text-center">
+                <h5 class="song-title mb-1" th:text="${song.title}">Tên bài hát</h5>
+                <p class="song-artist mb-0" th:text="${song.artist} ?: 'Không rõ ca sĩ'">Ca sĩ</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Nếu chưa có bài hát nào trong DB -->
+<div th:if="${featuredSongs == null or featuredSongs.isEmpty()}" class="text-center py-5 my-5">
+    <i class="fa fa-music fa-5x text-muted mb-4"></i>
+    <h3 class="text-muted">Chưa có bài hát nổi bật</h3>
+    <p class="text-muted">Hãy thêm bài hát vào hệ thống để hiển thị ở đây!</p>
+</div>
+
+</body>
+</html>

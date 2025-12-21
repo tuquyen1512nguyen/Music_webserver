@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý người dùng • TheAura Music</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Header private (đã login) -->
+<div th:replace="~{header}"></div>
+
+<!-- Nội dung Quản lý người dùng -->
+<div class="admin-dashboard-container">
+    <h2 class="admin-section-title"><i class="fa fa-users"></i> Quản lý người dùng</h2>
+
+    <div class="table-container">
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>Vai trò</th>
+                <th>Ngày tạo</th>
+                <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Lặp qua danh sách người dùng từ DB -->
+            <tr th:each="user : ${users}" class="table-row-hover">
+                <td th:text="${user.id}">1</td>
+                <td th:text="${user.username}">username</td>
+                <td th:text="${user.fullName ?: 'Chưa đặt'}">Chưa đặt</td>
+                <td th:text="${user.email}">email@example.com</td>
+                <td>
+                        <span class="role-badge"
+                              th:classappend="${user.role == 'ADMIN' ? 'role-admin' : 'role-user'}"
+                              th:text="${user.role}">
+                            USER
+                        </span>
+                </td>
+                <td th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy HH:mm')}">17/12/2025 10:30</td>
+                <td class="action-buttons">
+                    <button class="btn-action btn-delete" title="Xóa người dùng"
+                            th:onclick="'confirmDelete(' + ${user.id} + ')'">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+
+            <!-- Nếu không có người dùng nào -->
+            <tr th:if="${users == null or users.isEmpty()}">
+                <td colspan="7" class="text-center py-5" style="color: #aaa;">
+                    <i class="fa fa-users fa-3x mb-3"></i><br>
+                    Chưa có người dùng nào trong hệ thống
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="wave"></div>
+
+<script>
+    function confirmDelete(userId) {
+        if (confirm("Bạn có chắc muốn XÓA người dùng này?\nHành động này KHÔNG THỂ HOÀN TÁC!")) {
+            fetch('/admin/users/delete/' + userId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: '_method=DELETE' // nếu dùng Spring Security
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Xóa người dùng thành công!");
+                    location.reload();
+                } else {
+                    alert("Xóa thất bại! Có thể người dùng đang có dữ liệu liên quan.");
+                }
+            })
+            .catch(() => alert("Lỗi kết nối server!"));
+        }
+    }
+</script>
+</body>
+</html>

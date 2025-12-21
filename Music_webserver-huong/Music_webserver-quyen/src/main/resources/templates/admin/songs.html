@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý bài hát • TheAura Music</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Header private (đã login) -->
+<div th:replace="~{header}"></div>
+<!-- Nội dung Quản lý bài hát -->
+<div class="admin-dashboard-container">
+    <h2 class="admin-section-title"><i class="fa fa-music"></i> Quản lý bài hát</h2>
+
+    <div class="table-container">
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Thumbnail</th>
+                <th>Tiêu đề</th>
+                <th>Ca sĩ</th>
+                <th>Lượt nghe</th>
+                <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Lặp qua danh sách bài hát từ DB -->
+            <tr th:each="song : ${songs}" class="table-row-hover">
+                <td th:text="${song.id}">1</td>
+                <td>
+                    <img th:src="${song.thumbnail}"
+                         class="table-thumb"
+                         alt="Thumbnail"
+                         onerror="this.src='https://i.imgur.com/CUe7RkV.jpg'; this.onerror=null;">
+                </td>
+                <td class="song-title" th:text="${song.title}">Tiêu đề bài hát</td>
+                <td th:text="${song.artist}">Ca sĩ</td>
+                <td th:text="${#numbers.formatInteger(song.viewCount, 1, 'COMMA')}">0</td>
+                <td class="action-buttons">
+                    <button class="btn-action btn-delete" title="Xóa bài hát"
+                            th:onclick="'confirmDeleteSong(' + ${song.id} + ')'">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+
+            <!-- Nếu không có bài hát nào -->
+            <tr th:if="${songs == null or songs.isEmpty()}">
+                <td colspan="6" class="text-center py-5" style="color: #aaa;">
+                    <i class="fa fa-music fa-3x mb-3"></i><br>
+                    Chưa có bài hát nào trong hệ thống
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="wave"></div>
+
+<script>
+    function confirmDeleteSong(songId) {
+        if (confirm("Bạn có chắc muốn XÓA bài hát này?\nHành động này KHÔNG THỂ HOÀN TÁC!")) {
+            fetch('/admin/songs/delete/' + songId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: '_method=DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Xóa bài hát thành công!");
+                    location.reload();
+                } else {
+                    alert("Xóa thất bại! Có thể bài hát đang được sử dụng.");
+                }
+            })
+            .catch(() => alert("Lỗi kết nối server!"));
+        }
+    }
+</script>
+</body>
+</html>

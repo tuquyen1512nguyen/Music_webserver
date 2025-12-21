@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống kê • TheAura Music</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- Header private -->
+<div th:replace="~{header}"></div>
+<!-- Nội dung Thống kê -->
+<div class="admin-dashboard-container">
+    <h2 class="admin-section-title"><i class="fa fa-chart-bar"></i> Báo cáo & Thống kê chi tiết</h2>
+
+    <!-- Stat cards động từ model -->
+    <div class="admin-stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon purple"><i class="fa fa-chart-line"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${userGrowth != null ? userGrowth + '%' : '0%'}">0%</h3>
+                <p>Tăng trưởng người dùng (tháng này)</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fa fa-arrow-up"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${viewGrowth != null ? viewGrowth + '%' : '0%'}">0%</h3>
+                <p>Tăng lượt nghe</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon orange"><i class="fa fa-clock"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${avgListenTime ?: 'Chưa có dữ liệu'}">Chưa có</h3>
+                <p>Thời gian nghe trung bình/ngày</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fa fa-globe"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${vietnamUsers != null ? vietnamUsers + '%' : '0%'}">0%</h3>
+                <p>Người dùng từ Việt Nam</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Khu vực biểu đồ động -->
+    <div class="charts-grid">
+        <!-- Line Chart: Lượt nghe theo ngày -->
+        <div class="chart-card">
+            <h3>Lượt nghe theo ngày (7 ngày gần nhất)</h3>
+            <canvas id="viewsLineChart"></canvas>
+        </div>
+
+        <!-- Bar Chart: Top 5 bài hát hot -->
+        <div class="chart-card">
+            <h3>Top 5 bài hát hot nhất</h3>
+            <canvas id="topSongsBarChart"></canvas>
+        </div>
+
+        <!-- Pie Chart: Phân bố vai trò người dùng -->
+        <div class="chart-card">
+            <h3>Phân bố vai trò người dùng</h3>
+            <canvas id="rolePieChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="wave"></div>
+
+<script th:inline="javascript">
+    // Dark theme cho Chart.js
+    Chart.defaults.color = '#d7caff';
+    Chart.defaults.borderColor = 'rgba(138, 43, 226, 0.2)';
+
+    /*<![CDATA[*/
+    // Dữ liệu từ model (Thymeleaf inline JavaScript)
+    const dailyViews = /*[[${dailyViews}]]*/ []; // List<Long> [12000, 15000, ...]
+    const dailyLabels = /*[[${dailyLabels}]]*/ []; // List<String> ['14/12', '15/12', ...]
+
+    const topSongs = /*[[${topSongs}]]*/ []; // List<Song> top 5
+    const topSongTitles = topSongs.map(s => s.title);
+    const topSongViews = topSongs.map(s => s.viewCount);
+
+    const adminCount = /*[[${adminCount}]]*/ 0;
+    const userCount = /*[[${userCount}]]*/ 0;
+    /*]]>*/
+
+    // Line Chart
+    new Chart(document.getElementById('viewsLineChart'), {
+        type: 'line',
+        data: {
+            labels: dailyLabels.length > 0 ? dailyLabels : ['Chưa có dữ liệu'],
+            datasets: [{
+                label: 'Lượt nghe',
+                data: dailyViews.length > 0 ? dailyViews : [0],
+                borderColor: '#8a2be2',
+                backgroundColor: 'rgba(138, 43, 226, 0.2)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Bar Chart
+    new Chart(document.getElementById('topSongsBarChart'), {
+        type: 'bar',
+        data: {
+            labels: topSongTitles.length > 0 ? topSongTitles : ['Chưa có dữ liệu'],
+            datasets: [{
+                label: 'Lượt nghe',
+                data: topSongViews.length > 0 ? topSongViews : [0],
+                backgroundColor: ['#8a2be2', '#4169e1', '#32cd32', '#ff6b6b', '#ffa500']
+            }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Pie Chart
+    new Chart(document.getElementById('rolePieChart'), {
+        type: 'pie',
+        data: {
+            labels: ['ADMIN', 'USER'],
+            datasets: [{
+                data: [adminCount, userCount],
+                backgroundColor: ['#ff4444', '#44aa44']
+            }]
+        },
+        options: { responsive: true }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!-- src/main/resources/templates/login.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập • TheAura Music</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="wave"></div>
+
+<div class="register-container">
+    <div class="register-box">
+        <h1>TheAura</h1>
+        <h2>Chào mừng trở lại</h2>
+
+        <!-- Thông báo -->
+        <div th:if="${param.error}" class="footer-text" style="color:#ff6b6b; margin-bottom:20px;">
+            Sai tên đăng nhập hoặc mật khẩu!
+        </div>
+        <div th:if="${param.logout}" class="footer-text" style="color:#8aff8a; margin-bottom:20px;">
+            Đăng xuất thành công!
+        </div>
+
+        <!-- Form đăng nhập -->
+        <form th:action="@{/login}" method="post">
+            <div class="input-group">
+                <input type="text" name="username" placeholder="Tên đăng nhập hoặc email" required autofocus>
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Mật khẩu" required>
+            </div>
+            <button type="submit">Đăng nhập</button>
+        </form>
+
+        <p class="footer-text">
+            Chưa có tài khoản?
+            <a th:href="@{/register}">Đăng ký miễn phí</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

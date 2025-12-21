@@ -1,0 +1,45 @@
+<!-- src/main/resources/templates/layout/header.html -->
+<header xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <div class="logo">TheAura</div>
+
+    <div class="search-container">
+        <form th:action="@{/search}" method="get" autocomplete="off">
+            <input type="text" name="keyword" class="search-box"
+                   placeholder="Tìm kiếm bài hát, nghệ sĩ, album...">
+            <span class="search-icon">
+                <i class="fa fa-search"></i>
+            </span>
+        </form>
+    </div>
+
+    <nav>
+        <a href="/"><i class="fa fa-home"></i> Trang chủ</a>
+        <a href="/explore"><i class="fa fa-compass"></i> Khám phá</a>
+        <a href="/library"><i class="fa fa-layer-group"></i> <b>Thư viện</b></a>
+
+        <!-- Chỉ hiển thị khi ĐÃ đăng nhập -->
+        <span sec:authorize="isAuthenticated()">
+            <a href="/recent"><i class="fa fa-history"></i> Gần đây</a>
+            <a href="/profile" class="profile-btn"><i class="fa fa-user"></i> Hồ sơ</a>
+
+            <!-- Link Admin - chỉ hiển thị khi có role ADMIN -->
+            <a th:href="@{/admin}" sec:authorize="hasRole('ADMIN')" class="admin-btn">
+                <i class="fa fa-shield-alt"></i> Quản trị
+            </a>
+
+            <a th:href="@{/logout}" class="auth-btn"><i class="fa fa-sign-out-alt"></i> Đăng xuất</a>
+        </span>
+
+        <!-- Chỉ hiển thị khi CHƯA đăng nhập -->
+        <span sec:authorize="isAnonymous()">
+            <a th:href="@{/login}" class="auth-btn"><i class="fa fa-sign-in-alt"></i> Đăng nhập</a>
+            <a th:href="@{/register}" class="auth-btn"><i class="fa fa-user-plus"></i> Đăng ký</a>
+        </span>
+    </nav>
+</header>
+
+<!-- Font Awesome - chỉ cần include 1 lần ở đây (hoặc trong layout chính nếu dùng) -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

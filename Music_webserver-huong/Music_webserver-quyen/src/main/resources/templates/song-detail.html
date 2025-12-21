@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${song.title} + ' - ' + (${song.artist} ?: 'TheAura Music')">Chi tiết bài hát</title>
+    <!-- Font Awesome - bắt buộc để icon trong header hiển thị đầy đủ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS chính của dự án -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Header (giữ nguyên cơ chế switch) -->
+<div th:replace="~{header}"></div>
+<div class="song-detail-container" style="margin-top:130px; max-width:1600px; padding: 0 24px;">
+    <div class="row" style="display: flex; gap: 40px; flex-wrap: wrap;">
+        <!-- LEFT: Video + Lyric -->
+        <div class="col-lg-8" style="flex:2 1 400px; min-width:340px; max-width: 1000px;">
+            <div class="mb-4">
+                <h1 class="section-title" style="
+                        margin: 0 0 8px 0;
+                        font-size: 46px;
+                        background: linear-gradient(90deg, #8a2be2, #4169e1);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        font-family: 'Orbitron', 'Poppins', sans-serif;
+                        font-weight: 700;
+                " th:text="${song.title}">Tên bài hát</h1>
+                <div class="song-artist" style="font-size:21px; margin-bottom:30px;" th:text="${song.artist} ?: 'Không rõ ca sĩ'"></div>
+            </div>
+
+            <div class="ratio" style="margin-bottom: 35px;">
+                <iframe th:if="${song.youtubeUrl != null and !song.youtubeUrl.isEmpty()}"
+                        th:src="@{${song.youtubeUrl}}"
+                        allowfullscreen
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                </iframe>
+                <div th:unless="${song.youtubeUrl != null and !song.youtubeUrl.isEmpty()}"
+                     style="display:flex;align-items:center;justify-content:center;height:100%;background:rgba(30,30,70,0.7);border-radius: 20px;">
+                    <span style="font-size:1.4rem;color:#e0e7ff;">Không tìm thấy video</span>
+                </div>
+            </div>
+            <!-- NÚT "THÊM VÀO DANH SÁCH PHÁT" -->
+            <div class="text-center mt-4 mb-5">
+                <button class="btn-add-to-playlist" onclick="openPlaylistModal()">
+                    <i class="fa fa-plus"></i> Thêm vào danh sách phát
+                </button>
+            </div>
+
+            <!-- POPUP THÊM VÀO DANH SÁCH PHÁT -->
+            <div id="playlistModal" class="playlist-modal">
+                <div class="playlist-modal-content">
+                    <div class="playlist-modal-header">🎵 Thêm vào danh sách phát</div>
+
+                    <!-- Tạo chủ đề mới -->
+                    <div class="mb-4">
+                        <input type="text" id="newPlaylistName" class="form-control" placeholder="Đặt tên chủ đề mới (ví dụ: Chill đêm khuya, Nhạc gym...)" style="background:rgba(30,30,70,0.8);color:white;border:none;padding:14px;border-radius:12px;">
+                        <button class="btn-modal btn-create w-100 mt-3" onclick="createAndAdd()">
+                            <i class="fa fa-plus"></i> Tạo chủ đề mới & thêm bài này
+                        </button>
+                    </div>
+
+                    <!-- Hoặc chọn chủ đề cũ -->
+                    <div class="playlist-modal-header" th:if="${myPlaylists != null && !myPlaylists.isEmpty()}">
+                        Hoặc chọn chủ đề có sẵn:
+                    </div>
+                    <div class="playlist-list" th:if="${myPlaylists != null && !myPlaylists.isEmpty()}">
+                        <div th:each="pl : ${myPlaylists}" class="playlist-item"
+                             th:onclick="'addToPlaylist(' + ${pl.id} + ')'"
+                             th:text="${pl.name + ' (' + #lists.size(pl.songs) + ' bài)'}">
+                            Chủ đề
+                        </div>
+                    </div>
+
+                    <div class="playlist-modal-buttons mt-4">
+                        <button class="btn-modal btn-cancel" onclick="closePlaylistModal()">Hủy</button>
+                    </div>
+                </div>
+            </div>
+
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                let currentSongId = /*[[${song.id}]]*/ 0;
+
+                function openPlaylistModal() {
+                    document.getElementById('playlistModal').classList.add('show');
+                }
+
+                function closePlaylistModal() {
+                    document.getElementById('playlistModal').classList.remove('show');
+                    document.getElementById('newPlaylistName').value = '';
+                }
+
+                function createAndAdd() {
+                    let name = document.getElementById('newPlaylistName').value.trim();
+                    if (!name) {
+                        alert("Vui lòng đặt tên chủ đề!");
+                        return;
+                    }
+
+                    fetch('/playlist/create-and-add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'name=' + encodeURIComponent(name) + '&songId=' + currentSongId
+                    })
+                        .then(r => r.text())
+                        .then(text => {
+                            if (text === "OK") {
+                                alert("✅ Tạo chủ đề \"" + name + "\" và thêm bài thành công!");
+                                closePlaylistModal();
+                            } else {
+                                alert("❌ Lỗi khi tạo!");
+                            }
+                        });
+                }
+
+                function addToPlaylist(playlistId) {
+                    fetch('/playlist/add?playlistId=' + playlistId + '&songId=' + currentSongId, {method: 'POST'})
+                        .then(r => r.text())
+                        .then(text => {
+                            alert(text === "OK" ? "✅ Đã thêm vào chủ đề!" : "❌ Lỗi!");
+                            closePlaylistModal();
+                        });
+                }
+                /*]]>*/
+            </script>
+            <!-- Lyric -->
+            <div>
+                <h3 class="section-title" style="font-size:24px; color:#a770ff; margin-bottom:14px;">Lời bài hát</h3>
+                <div class="lyric"
+                     th:text="${song.lyric != null ? song.lyric : 'Lời bài hát chưa có sẵn...'}"
+                     style="margin-bottom:0; white-space:pre-line;">
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Thumbnail + Song info + Suggest -->
+        <div class="col-lg-4" style="flex:1 1 300px; min-width:300px; max-width:480px;">
+            <div style="position: sticky; top: 120px;">
+                <div class="text-center" style="margin-bottom: 35px;">
+                    <img th:src="${song.thumbnail} ?: 'https://via.placeholder.com/600x600/e9ecef/6c757d?text=No+Image'"
+                         alt="thumbnail"
+                         style="width:100%; max-height: 410px; object-fit:cover; border-radius:24px; box-shadow:0 16px 40px rgba(138,43,226,0.18); margin-bottom:20px;">
+                    <div style="display:inline-block; background:rgba(138,43,226,0.12); padding:7px 24px; border-radius:22px;">
+                        <span style="color:#a770ff;font-weight:600;" th:text="'Lượt xem: '+${song.viewCount}">0</span>
+                    </div>
+                </div>
+                <!-- Gợi ý nghe tiếp -->
+                <div class="text-center" style="
+ margin-bottom:35px;
+    width:100%;
+    background:rgba(25,25,55,0.75);
+    border-radius:24px;
+    padding:22px;
+    box-shadow:0 16px 40px rgba(138,43,226,0.18);
+">
+                    <h4 style="
+        color:#ffe066;
+        font-weight:700;
+        margin-bottom:22px;
+        letter-spacing:1px;
+    ">
+                        Gợi ý nghe tiếp
+                    </h4>
+
+                    <div style="display:flex;flex-direction:column;gap:14px;">
+                        <div th:each="song : ${suggestedSongs}"
+                             class="song-card d-flex align-items-center gap-3 p-3 rounded-4 position-relative overflow-hidden"
+                             style="
+                background: rgba(35,35,70,0.85);
+                transition: all 0.3s ease;
+             ">
+
+                            <!-- Thumbnail nhỏ -->
+                            <img th:src="${song.thumbnail} ?: 'https://via.placeholder.com/80x80/e9ecef/6c757d?text=No+Image'"
+                                 style="width:300px;height:172px;object-fit:cover;border-radius:14px;flex-shrink:0;"
+                                 alt="Thumbnail">
+
+                            <!-- Info -->
+                            <div class="flex-grow-1 text-start">
+                                <div style="font-size:26px;font-weight:600;margin-bottom:4px;"
+                                     th:text="${song.title}">Tên bài hát</div>
+                                <div style="font-size:14px;opacity:0.85;"
+                                     th:text="${song.artist}">Ca sĩ</div>
+                            </div>
+
+                            <!-- Click toàn card -->
+                            <a th:href="@{'/songs/' + ${song.id}}" class="stretched-link"></a>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wave"></div>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử nghe • TheAura Music</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Header chung -->
+<div th:replace="~{header}"></div>
+
+<!-- Nội dung trang Recent -->
+<div class="recent-container container my-5">
+    <h2 class="recent-title text-center mb-5">
+        <i class="fa fa-history text-primary me-3"></i> Lịch sử nghe gần đây
+    </h2>
+
+    <!-- Kiểm tra đã đăng nhập chưa -->
+    <div sec:authorize="isAnonymous()" class="text-center py-5">
+        <i class="fa fa-lock fa-4x text-muted mb-4"></i>
+        <h3 class="text-muted">Bạn cần đăng nhập để xem lịch sử nghe</h3>
+        <a th:href="@{/login}" class="btn btn-primary mt-3">Đăng nhập ngay</a>
+    </div>
+
+    <!-- Danh sách động khi đã đăng nhập -->
+    <div class="recent-grid" sec:authorize="isAuthenticated()"
+         th:if="${recentSongs != null and !recentSongs.isEmpty()}">
+
+        <div th:each="song, iter : ${recentSongs}" class="recent-card position-relative">
+            <div class="recent-number text-muted fw-bold">
+                [[${iter.index + 1}]]
+            </div>
+
+            <img th:src="${song.thumbnail} ?: 'https://via.placeholder.com/100/e9ecef/6c757d?text=No+Image'"
+                 alt="Thumbnail" class="recent-thumb rounded">
+
+            <div class="recent-info">
+                <h4 class="recent-song-title mb-1" th:text="${song.title}">Tên bài hát</h4>
+                <p class="recent-artist mb-1" th:text="${song.artist}">Ca sĩ</p>
+                <!-- XÓA DÒNG lastPlayed ĐI -->
+                <!-- Chỉ giữ timeAgo đẹp -->
+
+            <button class="recent-play-btn" title="Phát lại bài hát">
+                <i class="fa fa-play"></i>
+            </button>
+
+            <a th:href="@{'/songs/' + ${song.id}}" class="recent-link-overlay stretched-link"></a>
+        </div>
+        </div>
+
+    <!-- Empty state khi chưa nghe bài nào -->
+    <div sec:authorize="isAuthenticated()"
+         th:if="${recentSongs == null or recentSongs.isEmpty()}"
+         class="text-center py-5">
+        <i class="fa fa-headphones fa-5x text-muted mb-4"></i>
+        <h3 class="text-muted">Bạn chưa nghe bài hát nào gần đây</h3>
+        <p class="text-muted">Hãy khám phá và nghe nhạc để lịch sử được lưu lại!</p>
+        <a th:href="@{/}" class="btn btn-outline-primary mt-3">Về trang chủ</a>
+    </div>
+</div>
+
+<div class="wave"></div>
+
+</body>
+</html>

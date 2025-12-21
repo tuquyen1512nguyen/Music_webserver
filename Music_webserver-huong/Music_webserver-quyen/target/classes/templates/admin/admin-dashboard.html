@@ -1,0 +1,113 @@
+<!-- src/main/resources/templates/admin/admin-dashboard.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản trị • TheAura Music</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Header private (đã login) -->
+<div th:replace="~{header}"></div>
+
+<!-- Nội dung Dashboard Admin -->
+<div class="admin-dashboard-container">
+    <div class="admin-welcome">
+        <h2>Chào mừng Admin <strong th:text="${#authentication.principal.username}">Admin</strong></h2>
+        <p>Quản lý và theo dõi hoạt động của TheAura Music</p>
+    </div>
+
+    <div class="admin-stats-grid">
+        <!-- Tổng người dùng -->
+        <div class="stat-card">
+            <div class="stat-icon purple"><i class="fa fa-users"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${totalUsers}">0</h3>
+                <p>Tổng người dùng</p>
+            </div>
+        </div>
+
+        <!-- Tổng bài hát -->
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fa fa-music"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${totalSongs}">0</h3>
+                <p>Tổng bài hát</p>
+            </div>
+        </div>
+
+        <!-- Tổng lượt nghe -->
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fa fa-headphones"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${#numbers.formatInteger(totalViews, 1, 'COMMA')}">0</h3>
+                <p>Tổng lượt nghe</p>
+            </div>
+        </div>
+
+        <!-- Tổng playlist -->
+        <div class="stat-card">
+            <div class="stat-icon cyan"><i class="fa fa-list-alt"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${totalPlaylists}">0</h3>
+                <p>Tổng playlist</p>
+            </div>
+        </div>
+
+        <!-- Bài hát hot nhất -->
+        <div class="stat-card">
+            <div class="stat-icon orange"><i class="fa fa-fire"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${hotSong?.title} ?: 'Chưa có dữ liệu'">Chưa có</h3>
+                <p>Bài hát hot nhất</p>
+                <small th:if="${hotSong}"
+                       th:text="${hotSong.artist} + ' • ' + ${#numbers.formatInteger(hotSong.viewCount, 3, 'COMMA')} + ' lượt'">
+                    Ca sĩ • lượt nghe
+                </small>
+                <small th:unless="${hotSong}">Chưa có bài hát nào được nghe</small>
+            </div>
+        </div>
+
+        <!-- Người dùng mới hôm nay -->
+        <div class="stat-card">
+            <div class="stat-icon pink"><i class="fa fa-user-plus"></i></div>
+            <div class="stat-content">
+                <h3 th:text="${newUsersToday}">0</h3>
+                <p>Người dùng mới hôm nay</p>
+            </div>
+        </div>
+
+        <!-- Xu hướng tìm kiếm -->
+        <div class="stat-card large">
+            <div class="stat-icon pink"><i class="fa fa-search"></i></div>
+            <div class="stat-content">
+                <h3>Xu hướng tìm kiếm</h3>
+                <ul class="trend-list">
+                    <th:block th:if="${topKeywords != null and !topKeywords.isEmpty()}">
+                        <li th:each="trend, iter : ${topKeywords}"
+                            th:text="${iter.index + 1} + '. ' + ${trend}">
+                            1. Từ khóa
+                        </li>
+                    </th:block>
+                    <li th:if="${topKeywords == null or topKeywords.isEmpty()}">
+                        Chưa có dữ liệu tìm kiếm
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nút hành động nhanh -->
+    <div class="quick-actions">
+        <a th:href="@{/admin/users}" class="quick-btn"><i class="fa fa-users"></i> Quản lý người dùng</a>
+        <a th:href="@{/admin/songs}" class="quick-btn"><i class="fa fa-music"></i> Quản lý bài hát</a>
+        <a th:href="@{/admin/statistics}" class="quick-btn"><i class="fa fa-chart-line"></i> Báo cáo chi tiết</a>
+    </div>
+</div>
+
+<div class="wave"></div>
+</body>
+</html>

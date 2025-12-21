@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${playlist.name} + ' • TheAura Music'">Danh sách phát</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{header}"></div>
+
+<div class="playlist-detail-container">
+    <!-- Header playlist -->
+    <div class="playlist-header">
+        <div class="playlist-cover">
+            <img th:src="${!playlist.songs.isEmpty() ? playlist.songs[0].song.thumbnail : 'https://i.imgur.com/CUe7RkV.jpg'}"
+                 alt="cover" class="playlist-cover-img">
+        </div>
+
+        <div class="playlist-info">
+            <h1 class="playlist-title" th:text="${playlist.name}">Tên playlist</h1>
+            <p class="playlist-desc" th:text="${playlist.description} ?: 'Chưa có mô tả'">Mô tả</p>
+            <p class="playlist-stats" th:text="${#lists.size(playlist.songs) + ' bài hát'}">0 bài hát</p>
+
+            <div class="playlist-actions">
+                <button class="btn-play-all">
+                    <i class="fa fa-play"></i> Phát tất cả
+                </button>
+                <button class="btn-shuffle">
+                    <i class="fa fa-random"></i> Phát ngẫu nhiên
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danh sách bài hát -->
+    <div class="playlist-songs" th:if="${playlist.songs != null && !playlist.songs.isEmpty()}">
+        <div th:each="ps, iter : ${playlist.songs}" class="song-item">
+            <div class="song-number" th:text="${iter.index + 1}">1</div>
+            <img th:src="${ps.song.thumbnail}" alt="thumb" class="song-thumb">
+            <div class="song-details">
+                <h4 class="song-title" th:text="${ps.song.title}">Tên bài hát</h4>
+                <p class="song-artist" th:text="${ps.song.artist}">Ca sĩ</p>
+            </div>
+            <div class="song-duration">3:45</div>
+            <button class="song-play-btn" title="Phát bài hát">
+                <i class="fa fa-play"></i>
+            </button>
+            <a th:href="@{'/songs/' + ${ps.song.id}}" class="song-overlay"></a>
+        </div>
+    </div>
+
+    <!-- Playlist trống -->
+    <div class="playlist-empty" th:if="${playlist.songs == null or playlist.songs.isEmpty()}">
+        <i class="fa fa-music empty-icon"></i>
+        <h3>Playlist này chưa có bài hát nào</h3>
+        <p>Hãy thêm bài hát từ trang nghe nhạc để làm phong phú playlist của bạn!</p>
+        <a th:href="@{/}" class="btn-primary">Tìm nhạc ngay</a>
+    </div>
+</div>
+
+<div class="wave"></div>
+</body>
+</html>
