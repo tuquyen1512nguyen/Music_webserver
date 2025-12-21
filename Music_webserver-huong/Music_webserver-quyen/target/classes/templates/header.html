@@ -15,31 +15,46 @@
     </div>
 
     <nav>
-        <a href="/"><i class="fa fa-home"></i> Trang chủ</a>
-        <a href="/explore"><i class="fa fa-compass"></i> Khám phá</a>
-        <a href="/library"><i class="fa fa-layer-group"></i> <b>Thư viện</b></a>
+        <!-- ==================== MENU CHO ADMIN ==================== -->
+        <span sec:authorize="hasRole('ADMIN')">
 
-        <!-- Chỉ hiển thị khi ĐÃ đăng nhập -->
-        <span sec:authorize="isAuthenticated()">
+<!--            <a href="/"><i class="fa fa-home"></i> Trang chủ</a>-->
+
+            <a th:href="@{/admin/dashboard}" class="nav-link">
+                <i class="fa fa-tachometer-alt"></i> Tổng quan
+            </a>
+            <a th:href="@{/admin/users}" class="nav-link">
+                <i class="fa fa-users"></i> Quản lý người dùng
+            </a>
+            <a th:href="@{/admin/songs}" class="nav-link">
+                <i class="fa fa-music"></i> Quản lý bài hát
+            </a>
+            <a th:href="@{/admin/statistics}" class="nav-link">
+                <i class="fa fa-chart-bar"></i> Báo cáo chi tiết
+            </a>
+            <a th:href="@{/logout}" class="nav-link logout">
+                <i class="fa fa-sign-out-alt"></i> Đăng xuất
+            </a>
+        </span>
+
+        <!-- ==================== MENU CHO NGƯỜI DÙNG THƯỜNG (KHÔNG PHẢI ADMIN) ==================== -->
+        <span sec:authorize="isAuthenticated() and !hasRole('ADMIN')">
+            <a href="/"><i class="fa fa-home"></i> Trang chủ</a>
+            <a href="/library"><i class="fa fa-layer-group"></i> <b>Thư viện</b></a>
             <a href="/recent"><i class="fa fa-history"></i> Gần đây</a>
             <a href="/profile" class="profile-btn"><i class="fa fa-user"></i> Hồ sơ</a>
-
-            <!-- Link Admin - chỉ hiển thị khi có role ADMIN -->
-            <a th:href="@{/admin}" sec:authorize="hasRole('ADMIN')" class="admin-btn">
-                <i class="fa fa-shield-alt"></i> Quản trị
-            </a>
-
             <a th:href="@{/logout}" class="auth-btn"><i class="fa fa-sign-out-alt"></i> Đăng xuất</a>
         </span>
 
-        <!-- Chỉ hiển thị khi CHƯA đăng nhập -->
+        <!-- ==================== MENU CHO KHÁCH (CHƯA ĐĂNG NHẬP) ==================== -->
         <span sec:authorize="isAnonymous()">
+            <a href="/"><i class="fa fa-home"></i> Trang chủ</a>
             <a th:href="@{/login}" class="auth-btn"><i class="fa fa-sign-in-alt"></i> Đăng nhập</a>
             <a th:href="@{/register}" class="auth-btn"><i class="fa fa-user-plus"></i> Đăng ký</a>
         </span>
     </nav>
 </header>
 
-<!-- Font Awesome - chỉ cần include 1 lần ở đây (hoặc trong layout chính nếu dùng) -->
+<!-- Font Awesome (chỉ cần include 1 lần) -->
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
