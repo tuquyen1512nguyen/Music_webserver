@@ -16,7 +16,9 @@
 <!-- Nội dung Dashboard Admin -->
 <div class="admin-dashboard-container">
     <div class="admin-welcome">
-        <h2>Chào mừng Admin <strong th:text="${#authentication.principal.username}">Admin</strong></h2>
+        <h2>Chào mừng Admin
+            <strong th:text="${currentUser != null and currentUser.fullName != null and currentUser.fullName != ''} ? ${currentUser.fullName} : ${#authentication.principal.username}">Admin</strong>
+        </h2>
         <p>Quản lý và theo dõi hoạt động của TheAura Music</p>
     </div>
 

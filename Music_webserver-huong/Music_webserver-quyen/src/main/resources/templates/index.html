@@ -19,26 +19,64 @@
     <p>Nghe nhạc miễn phí – Không cần đăng nhập!</p>
 </section>
 
-<!-- Tiêu đề section bài hát nổi bật -->
+<!-- ===== PHẦN GỢI Ý AI CÁ NHÂN HÓA (CHỈ KHI LOGIN) ===== -->
+<div th:if="${#authorization.expression('isAuthenticated()') and recommendedSongs != null and !recommendedSongs.isEmpty()}" class="container my-5">
+    <h3 class="section-title text-center my-5">
+        <i class="fa fa-brain text-purple me-3"></i>
+        Gợi ý AI dành riêng cho bạn
+    </h3>
+
+    <div class="song-grid">
+        <div th:each="song : ${recommendedSongs}" class="song-item">
+            <div class="song-card">
+                <div class="position-relative overflow-hidden rounded-3">
+                    <img th:src="${song.thumbnail} ?: 'https://via.placeholder.com/400x400/e9ecef/6c757d?text=No+Image'"
+                         class="img-fluid w-100" style="width: 100%; height: 150px; object-fit: contain; background-color: #111;">
+                    <div class="play-overlay">
+                        <a th:href="@{'/songs/' + ${song.id}}" class="play-button">
+                            ▶
+                        </a>
+                    </div>
+                    <button class="favorite-btn-search"
+                            th:onclick="'toggleFavoriteFromSearch(' + ${song.id} + ', this)'"
+                            title="Yêu thích">
+                        <i class="fa-heart far" style="font-size: 1.8rem; color: white; text-shadow: 0 0 10px black;"></i>
+                    </button>
+                </div>
+                <div class="p-3 text-center">
+                    <h5 class="song-title mb-1" th:text="${song.title}">Tên bài hát</h5>
+                    <p class="song-artist mb-0" th:text="${song.artist} ?: 'Không rõ ca sĩ'">Ca sĩ</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Nếu login nhưng chưa có gợi ý AI -->
+<div th:if="${#authorization.expression('isAuthenticated()') and (recommendedSongs == null or recommendedSongs.isEmpty())}" class="container my-5 text-center py-5">
+    <i class="fa fa-brain fa-5x text-muted mb-4"></i>
+    <h3 class="text-muted">AI đang học sở thích của bạn</h3>
+    <p class="text-muted">Tìm kiếm và nghe nhạc nhiều hơn để nhận gợi ý chính xác nhé!</p>
+</div>
+
+<!-- ===== PHẦN TRENDING / GỢI Ý AI CHUNG ===== -->
 <h3 class="section-title text-center my-5">
     <i class="fa fa-fire text-danger me-3"></i>
-    <span sec:authorize="isAuthenticated()">Gợi ý hot cho bạn</span>
-    <span sec:authorize="isAnonymous()">Bài hát nổi bật</span>
+    <span sec:authorize="isAuthenticated()">Bài hát hot đang thịnh hành</span>
+    <span sec:authorize="isAnonymous()">Gợi ý AI: Bài hát có lượt nghe cao nhất</span>
 </h3>
 
-<!-- Grid bài hát nổi bật ĐỘNG từ DB (top viewCount cao nhất) -->
 <div class="song-grid">
     <div th:each="song : ${featuredSongs}" class="song-item">
         <div class="song-card">
             <div class="position-relative overflow-hidden rounded-3">
                 <img th:src="${song.thumbnail} ?: 'https://via.placeholder.com/400x400/e9ecef/6c757d?text=No+Image'"
-                     class="img-fluid w-100" style=" width: 100%;height: 150px; object-fit: contain; background-color: #111;">
+                     class="img-fluid w-100" style="width: 100%; height: 150px; object-fit: contain; background-color: #111;">
                 <div class="play-overlay">
                     <a th:href="@{'/songs/' + ${song.id}}" class="play-button">
                         ▶
                     </a>
                 </div>
-                <!-- NÚT YÊU THÍCH TRÊN THUMBNAIL – DÙNG CSS CÓ SẴN TRONG style.css -->
                 <button class="favorite-btn-search"
                         th:onclick="'toggleFavoriteFromSearch(' + ${song.id} + ', this)'"
                         title="Yêu thích">
@@ -53,13 +91,14 @@
     </div>
 </div>
 
-<!-- Nếu chưa có bài hát nào trong DB -->
+<!-- Nếu chưa có bài hát nào -->
 <div th:if="${featuredSongs == null or featuredSongs.isEmpty()}" class="text-center py-5 my-5">
     <i class="fa fa-music fa-5x text-muted mb-4"></i>
     <h3 class="text-muted">Chưa có bài hát nổi bật</h3>
     <p class="text-muted">Hãy thêm bài hát vào hệ thống để hiển thị ở đây!</p>
 </div>
-<!-- JavaScript toggle yêu thích từ trang tìm kiếm -->
+
+<!-- JavaScript toggle yêu thích -->
 <script th:inline="javascript">
     /*<![CDATA[*/
     function toggleFavoriteFromSearch(songId, button) {

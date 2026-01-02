@@ -12,27 +12,41 @@ import java.util.stream.Collectors;
 
 public interface SearchHistoryRepository extends JpaRepository<SearchHistory, Long> {
 
-    // 1. Top keywords theo user
-    @Query("SELECT sh.keyword FROM SearchHistory sh WHERE sh.user.id = :userId " +
-            "GROUP BY sh.keyword ORDER BY COUNT(sh.keyword) DESC")
-    List<String> findTopKeywordsByUserId(@Param("userId") Long userId, Pageable pageable);
+    // Lấy top 10 keyword gần đây nhất của user (recent – ưu tiên cho AI gợi ý hành vi mới)
+    @Query("SELECT sh.keyword FROM SearchHistory sh WHERE sh.user.id = :userId ORDER BY sh.searchedAt DESC")
+    List<String> findTop10KeywordsByUserId(@Param("userId") Long userId, Pageable pageable);
 
-    // Method tiện lợi
-    default List<String> findTopKeywordsByUserId(Long userId, int limit) {
-        return findTopKeywordsByUserId(userId, PageRequest.of(0, limit));
+    // Method tiện lợi gọi với limit 10
+    default List<String> findTop10KeywordsByUserId(Long userId) {
+        return findTop10KeywordsByUserId(userId, PageRequest.of(0, 10));
     }
 
-    // 2. Top keywords toàn hệ thống (tất cả user)
-    @Query("SELECT sh.keyword, COUNT(sh) as cnt FROM SearchHistory sh " +
-            "GROUP BY sh.keyword " +
-            "ORDER BY cnt DESC")
+    // Top keywords theo số lần tìm (count) – cho thống kê admin
+    @Query("SELECT sh.keyword FROM SearchHistory sh WHERE sh.user.id = :userId " +
+            "GROUP BY sh.keyword ORDER BY COUNT(sh.keyword) DESC")
+    List<String> findTopKeywordsByCountByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    default List<String> findTopKeywordsByCountByUserId(Long userId, int limit) {
+        return findTopKeywordsByCountByUserId(userId, PageRequest.of(0, limit));
+    }
+
+    // Top keywords toàn hệ thống (cho admin dashboard)
+    @Query("SELECT sh.keyword, COUNT(sh.keyword) as cnt FROM SearchHistory sh " +
+            "GROUP BY sh.keyword ORDER BY cnt DESC")
     List<Object[]> findTopKeywordsRaw(Pageable pageable);
 
-    // Method tiện lợi trả về List<String>
     default List<String> findTopKeywords(int limit) {
         return findTopKeywordsRaw(PageRequest.of(0, limit))
                 .stream()
-                .map(row -> (String) row[0]) // row[0] là keyword, row[1] là count
+                .map(row -> (String) row[0])
                 .collect(Collectors.toList());
+    }
+    // Lấy top N keyword gần đây nhất của user (ORDER BY searchedAt DESC)
+    @Query("SELECT sh.keyword FROM SearchHistory sh WHERE sh.user.id = :userId ORDER BY sh.searchedAt DESC")
+    List<String> findRecentKeywordsByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    // Method tiện lợi lấy top 10 recent
+    default List<String> findTop10RecentKeywords(Long userId) {
+        return findRecentKeywordsByUserId(userId, PageRequest.of(0, 10));
     }
 }

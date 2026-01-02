@@ -6,6 +6,7 @@ import com.music.search.entity.User;
 import com.music.search.repository.UserRepository;
 import com.music.search.service.FavoriteService;
 import com.music.search.service.PlaylistService;
+import com.music.search.service.RecommendationService; // THÊM IMPORT NÀY
 import com.music.search.service.SearchHistoryService;
 import com.music.search.service.SongService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 @Controller
-@RequiredArgsConstructor
+@RequiredArgsConstructor // TỰ ĐỘNG INJECT CÁC FINAL FIELD
 public class WebController {
 
     private final SongService songService;
@@ -31,6 +32,7 @@ public class WebController {
     private final PlaylistService playlistService;
     private final FavoriteService favoriteService;
     private final PasswordEncoder passwordEncoder;
+    private final RecommendationService recommendationService; // THÊM DÒNG NÀY – FIX LỖI
 
     // ==================== TRANG CHỦ ====================
     @GetMapping({"/", "/index"})
@@ -39,12 +41,12 @@ public class WebController {
         List<SongDTO> featuredSongs = songService.getTopSongsByViewCount(12);
         model.addAttribute("featuredSongs", featuredSongs);
 
-        // Gợi ý cá nhân hóa nếu đã login
+        // Gợi ý AI cá nhân hóa nếu đã login
         if (auth != null && auth.isAuthenticated()) {
             User user = userRepository.findByUsername(auth.getName()).orElse(null);
             if (user != null) {
-                List<SongDTO> recommended = songService.getRecommendedSongsByPreference(user.getId(), 12);
-                model.addAttribute("recommendedSongs", recommended);
+                List<SongDTO> aiRecommendations = recommendationService.getRecommendations(user.getId(), 12);
+                model.addAttribute("recommendedSongs", aiRecommendations); // Tên attribute để frontend dùng
             }
         }
 
@@ -222,18 +224,17 @@ public class WebController {
     @GetMapping("/recent")
     public String recent(Model model, Authentication auth) {
         if (auth == null || !auth.isAuthenticated()) {
-            return "recent";
+            return "recent"; // sẽ hiện thông báo đăng nhập
         }
 
         User user = userRepository.findByUsername(auth.getName()).orElse(null);
-        if (user == null) {
-            return "recent";
-        }
+        if (user == null) return "recent";
 
-        // Tạm thời dùng top hot (sau này thay bằng lịch sử thật)
-//        List<SongDTO> recentSongs = songService.getTopSongsByViewCount(20);
-//        model.addAttribute("recentSongs", recentSongs);
+        // Lấy top 20 bài hát gần nhất user nghe (giả sử có entity ListenHistory hoặc từ view log)
+        // Tạm thời: lấy top bài hát có viewCount cao + giả lập thời gian
+        List<SongDTO> recentSongs = songService.getTopSongsByViewCount(20);
 
+        model.addAttribute("recentSongs", recentSongs);
         return "recent";
     }
 }

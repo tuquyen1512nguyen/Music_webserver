@@ -18,9 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -34,11 +31,12 @@ public class AdminController {
     private final PlaylistRepository playlistRepository;
     private final SearchHistoryRepository searchHistoryRepository;
 
-    // <<<--- THÊM METHOD NÀY ĐỂ KHI GÕ /admin → TỰ ĐỘNG VÀO DASHBOARD <<<
+    // Redirect /admin → dashboard (khi gõ /admin)
     @GetMapping
     public String adminRoot() {
         return "redirect:/admin/dashboard";
     }
+
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         // Tổng người dùng
@@ -46,12 +44,6 @@ public class AdminController {
 
         // Tổng bài hát
         long totalSongs = songRepository.count();
-
-        // Tổng lượt nghe
-        long totalViews = songRepository.findAll()
-                .stream()
-                .mapToLong(Song::getViewCount)
-                .sum();
 
         // Tổng playlist
         long totalPlaylists = playlistRepository.count();
@@ -71,8 +63,7 @@ public class AdminController {
         // Truyền vào model
         model.addAttribute("totalUsers", totalUsers);
         model.addAttribute("totalSongs", totalSongs);
-        model.addAttribute("totalViews", totalViews);
-        model.addAttribute("totalPlaylists", totalPlaylists);
+               model.addAttribute("totalPlaylists", totalPlaylists);
         model.addAttribute("hotSong", hotSong);
         model.addAttribute("newUsersToday", newUsersToday);
         model.addAttribute("topKeywords", topKeywords);
@@ -80,7 +71,6 @@ public class AdminController {
         return "admin/admin-dashboard";
     }
 
-    // Các trang khác...
     @GetMapping("/users")
     public String manageUsers(Model model) {
         model.addAttribute("users", userRepository.findAll());
@@ -95,66 +85,51 @@ public class AdminController {
 
     @PostMapping("/users/delete/{id}")
     public String deleteUser(@PathVariable Long id) {
-        try {
-            userRepository.deleteById(id);
-        } catch (Exception e) {
-            // Có thể log lỗi
-        }
+        userRepository.deleteById(id);
         return "redirect:/admin/users";
     }
+
     @PostMapping("/songs/delete/{id}")
     public String deleteSong(@PathVariable Long id) {
-        try {
-            songRepository.deleteById(id);
-        } catch (Exception e) {
-            // Log lỗi nếu cần
-        }
+        songRepository.deleteById(id);
         return "redirect:/admin/songs";
     }
+
     @GetMapping("/statistics")
     public String statistics(Model model) {
-        // 1. Tăng trưởng người dùng tháng này (%)
+        // Tăng trưởng người dùng tháng này (%)
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfMonth = now.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
         LocalDateTime startOfLastMonth = startOfMonth.minusMonths(1);
-        LocalDateTime endOfLastMonth = startOfMonth.minusSeconds(1);
 
         long usersThisMonth = userRepository.countByCreatedAtAfter(startOfMonth);
-        long usersLastMonth = userRepository.countByCreatedAtBetween(startOfLastMonth, endOfLastMonth);
+        long usersLastMonth = userRepository.countByCreatedAtBetween(startOfLastMonth, startOfMonth.minusSeconds(1));
 
         double userGrowth = usersLastMonth == 0 ? 100.0 :
                 ((double)(usersThisMonth - usersLastMonth) / usersLastMonth) * 100;
         model.addAttribute("userGrowth", Math.round(userGrowth * 10.0) / 10.0);
 
-        // 2. Tăng trưởng lượt nghe – tạm để 0 hoặc bỏ vì chưa có lịch sử
-        model.addAttribute("viewGrowth", 0.0);
+        // Tăng trưởng lượt nghe (dùng totalViews tháng này vs tháng trước – em thêm query nếu cần)
+        model.addAttribute("viewGrowth", 0.0); // Tạm 0, em có thể thêm query tương tự
 
-        // 3. Thời gian nghe trung bình – tạm
+        // Thời gian nghe trung bình – tạm
         model.addAttribute("avgListenTime", "Chưa có dữ liệu");
 
-        // 4. Người dùng Việt Nam – tạm
+        // Người dùng Việt Nam – tạm (em có thể thêm cột location nếu cần)
         model.addAttribute("vietnamUsers", 0);
 
-        // 5. Biểu đồ Line: Dữ liệu giả 7 ngày (vì chưa có lịch sử)
-        List<String> dailyLabels = new ArrayList<>();
-        List<Long> dailyViews = new ArrayList<>();
-        for (int i = 6; i >= 0; i--) {
-            LocalDate date = LocalDate.now().minusDays(i);
-            dailyLabels.add(date.format(DateTimeFormatter.ofPattern("dd/MM")));
-            dailyViews.add((long) (10000 + Math.random() * 20000)); // giả lập
-        }
-        model.addAttribute("dailyLabels", dailyLabels);
-        model.addAttribute("dailyViews", dailyViews);
+        // Biểu đồ Line: lượt nghe 7 ngày gần nhất (dùng query hoặc giả lập nếu chưa có)
+        // Em có thể thêm query daily views nếu cần – tạm giả lập
+        model.addAttribute("dailyLabels", List.of("26/12", "27/12", "28/12", "29/12", "30/12", "31/12", "01/01"));
+        model.addAttribute("dailyViews", List.of(12000L, 15000L, 18000L, 14000L, 16000L, 20000L, 22000L));
 
-        // 6. Top 5 bài hát hot thật
-        List<Song> topSongs = songRepository.findTop5ByOrderByViewCountDesc();
-        model.addAttribute("topSongs", topSongs.isEmpty() ? Collections.emptyList() : topSongs);
+        // Top 5 bài hát hot
+        List<Song> topSongs = songRepository.findTop5ByViewCount();
+        model.addAttribute("topSongs", topSongs);
 
-        // 7. Phân bố vai trò
+        // Phân bố vai trò
         long adminCount = userRepository.countByRole(User.Role.ADMIN);
-        long userCount = userRepository.countByRole(User.Role.USER); // hoặc tổng - admin
         model.addAttribute("adminCount", adminCount);
-        model.addAttribute("userCount", userCount);
 
         return "admin/statistics";
     }
